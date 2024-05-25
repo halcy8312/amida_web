@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amida Lottery</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div id="amida-container"></div>
+    <button id="start-stop-btn">Start/Stop</button>
+    <input type="range" id="speed-slider" min="1" max="10" value="2">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

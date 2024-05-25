@@ -1,0 +1,19 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: black;
+}
+
+#amida-container {
+    width: 320px;
+    height: 550px;
+    background-color: white;
+    position: relative;
+}
+
+button, input[type="range"] {
+    margin-top: 20px;
+}
