@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const container = document.getElementById('amida-container');
+    const canvas = document.getElementById('amida-canvas');
+    const ctx = canvas.getContext('2d');
     const startStopBtn = document.getElementById('start-stop-btn');
     const speedSlider = document.getElementById('speed-slider');
 
     let isRunning = false;
-    let speed = 2;
+    let speed = 1;
     let markers = [];
     let lines = [];
     let traps = [];
@@ -67,69 +68,49 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function draw() {
-        container.innerHTML = '';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         // Draw vertical lines
         for (let i = 0; i < 10; i++) {
             let x = 30 + i * 30;
-            let line = document.createElement('div');
-            line.style.position = 'absolute';
-            line.style.left = `${x}px`;
-            line.style.top = '10px';
-            line.style.width = '2px';
-            line.style.height = '580px';
-            line.style.backgroundColor = 'white';
-            container.appendChild(line);
+            ctx.beginPath();
+            ctx.moveTo(x, 10);
+            ctx.lineTo(x, 590);
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
         }
         // Draw horizontal lines
         lines.forEach(line => {
-            let path = document.createElement('div');
-            path.style.position = 'absolute';
-            path.style.left = `${line.xStart}px`;
-            path.style.top = `${line.y}px`;
-            path.style.width = `${line.xEnd - line.xStart}px`;
-            path.style.height = '2px';
-            path.style.backgroundColor = 'white';
-            container.appendChild(path);
+            ctx.beginPath();
+            ctx.moveTo(line.xStart, line.y);
+            ctx.lineTo(line.xEnd, line.y);
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
         });
         // Draw traps
         traps.forEach(trap => {
-            let trapDiv = document.createElement('div');
-            trapDiv.style.position = 'absolute';
-            trapDiv.style.left = `${trap.x - 5}px`;
-            trapDiv.style.top = `${trap.y - 5}px`;
-            trapDiv.style.width = '10px';
-            trapDiv.style.height = '10px';
-            trapDiv.style.backgroundColor = 'red';
-            container.appendChild(trapDiv);
+            ctx.fillStyle = 'red';
+            ctx.fillRect(trap.x - 5, trap.y - 5, 10, 10);
         });
         // Draw powerups
         powerups.forEach(powerup => {
-            let powerupDiv = document.createElement('div');
-            powerupDiv.style.position = 'absolute';
-            powerupDiv.style.left = `${powerup.x - 10}px`;
-            powerupDiv.style.top = `${powerup.y - 10}px`;
-            powerupDiv.style.width = '20px';
-            powerupDiv.style.height = '20px';
-            powerupDiv.style.borderRadius = '50%';
-            powerupDiv.style.backgroundColor = powerup.type === 'speed' ? 'blue' :
-                powerup.type === 'invincible' ? 'green' : 'gold';
-            container.appendChild(powerupDiv);
+            ctx.beginPath();
+            ctx.arc(powerup.x, powerup.y, 10, 0, Math.PI * 2);
+            ctx.fillStyle = powerup.type === 'speed' ? 'blue' : powerup.type === 'invincible' ? 'green' : 'gold';
+            ctx.fill();
         });
         // Draw markers
         markers.forEach(marker => {
-            let markerDiv = document.createElement('div');
-            markerDiv.style.position = 'absolute';
-            markerDiv.style.left = `${marker.x - 5}px`;
-            markerDiv.style.top = `${marker.y - 5}px`;
-            markerDiv.style.width = '10px';
-            markerDiv.style.height = '10px';
-            markerDiv.style.borderRadius = '50%';
-            markerDiv.style.backgroundColor = marker.color;
-            container.appendChild(markerDiv);
+            ctx.beginPath();
+            ctx.arc(marker.x, marker.y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = marker.color;
+            ctx.fill();
         });
     }
 
     function startGame() {
+        isRunning = true;
         markers.forEach((marker, index) => {
             markerTrails[index] = [];
             moveMarker(index);
@@ -149,12 +130,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             let moved = false;
             for (let line of lines) {
-                if (Math.abs(marker.y - line.y) <= marker.speed) {
-                    if (marker.x === line.xStart) {
-                        marker.x = line.xEnd;
-                    } else if (marker.x === line.xEnd) {
-                        marker.x = line.xStart;
-                    }
+                if (Math.abs(marker.y - line.y) <= marker.speed && (marker.x === line.xStart || marker.x === line.xEnd)) {
+                    marker.x = (marker.x === line.xStart) ? line.xEnd : line.xStart;
                     marker.score += powerupEffects[index] === 'double_score' ? 20 : 10;
                     moved = true;
                     break;
@@ -210,13 +187,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isRunning) {
             stopGame();
         } else {
-            isRunning = true;
             startGame();
         }
     });
 
     speedSlider.addEventListener('input', function() {
-        speed = speedSlider.value;
+        speed = speedSlider.value * 5;
         markers.forEach(marker => {
             if (powerupEffects[markers.indexOf(marker)] !== 'speed') {
                 marker.speed = speed;

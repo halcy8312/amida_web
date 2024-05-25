@@ -7,11 +7,8 @@ body {
     background-color: black;
 }
 
-#amida-container {
-    width: 320px;
-    height: 550px;
+canvas {
     background-color: white;
-    position: relative;
 }
 
 button, input[type="range"] {
