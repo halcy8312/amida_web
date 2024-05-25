@@ -123,7 +123,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function moveMarker(index) {
         let marker = markers[index];
-        let passedLine = false; // 横線通過フラグを追加
+        let passedLine = false;
+        let passedTop = false;
+        let passedBottom = false;
 
         let interval = setInterval(() => {
             if (!isRunning) {
@@ -133,26 +135,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
             let moved = false;
             for (let line of lines) {
-                if (!passedLine && Math.abs(marker.y - line.y) <= marker.speed) {
-                    // 横線通過判定を修正
-                    if (marker.x === line.xStart) {
-                        marker.x = line.xEnd;
-                    } else if (marker.x === line.xEnd) {
-                        marker.x = line.xStart;
+                // 横線の上端を通過したか判定
+                if (marker.y < line.y && marker.y + marker.speed >= line.y) {
+                    passedTop = true;
+
+                    // 横線の上端に触れた時にのみ横線を左右に移動
+                    if (!passedLine && marker.y >= line.y - 1 && marker.y <= line.y + 1) {
+                        if (marker.x === line.xStart) {
+                            marker.x = line.xEnd;
+                        } else if (marker.x === line.xEnd) {
+                            marker.x = line.xStart;
+                        }
+                        marker.y = line.y; // マーカーのy座標も更新
+                        marker.score += powerupEffects[index] === 'double_score' ? 20 : 10;
+                        passedLine = true;
+                        moved = true;
+                        break;
                     }
-                    marker.y = line.y; // マーカーのy座標も更新
-                    marker.score += powerupEffects[index] === 'double_score' ? 20 : 10;
-                    passedLine = true; // 横線通過フラグを立てる
-                    moved = true;
-                    break;
                 }
+                // 横線の下端を通過したか判定
+                if (marker.y < line.y && marker.y + marker.speed >= line.y + 1) {
+                    passedBottom = true;
+                }
+            }
+            
+            // 横線通過判定をリセット
+            if(moved) {
+                passedLine = false;
+                passedTop = false;
+                passedBottom = false;
             }
 
             if (!moved) {
                 marker.y += marker.speed;
                 passedLine = false; // 次の横線に到達したらフラグを戻す
             }
-
+            
             // Check for traps
             traps.forEach(trap => {
                 if (Math.abs(marker.x - trap.x) <= 5 && Math.abs(marker.y - trap.y) <= 5) {
