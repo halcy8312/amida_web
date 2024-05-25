@@ -130,7 +130,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startGame() {
-        isRunning = true;
         markers.forEach((marker, index) => {
             markerTrails[index] = [];
             moveMarker(index);
@@ -148,13 +147,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearInterval(interval);
                 return;
             }
-            // Move logic
             let moved = false;
             for (let line of lines) {
-                if (marker.y === line.y && (marker.x === line.xStart || marker.x === line.xEnd)) {
+                if (Math.abs(marker.y - line.y) <= marker.speed) {
                     if (marker.x === line.xStart) {
                         marker.x = line.xEnd;
-                    } else {
+                    } else if (marker.x === line.xEnd) {
                         marker.x = line.xStart;
                     }
                     marker.score += powerupEffects[index] === 'double_score' ? 20 : 10;
@@ -212,6 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isRunning) {
             stopGame();
         } else {
+            isRunning = true;
             startGame();
         }
     });
