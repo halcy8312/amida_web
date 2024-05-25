@@ -123,23 +123,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function moveMarker(index) {
         let marker = markers[index];
+        let passedLine = false; // 横線通過フラグを追加
+
         let interval = setInterval(() => {
             if (!isRunning) {
                 clearInterval(interval);
                 return;
             }
+
             let moved = false;
             for (let line of lines) {
-                if (Math.abs(marker.y - line.y) <= marker.speed && (marker.x === line.xStart || marker.x === line.xEnd)) {
-                    marker.x = (marker.x === line.xStart) ? line.xEnd : line.xStart;
+                if (!passedLine && Math.abs(marker.y - line.y) <= marker.speed) {
+                    // 横線通過判定を修正
+                    if (marker.x === line.xStart) {
+                        marker.x = line.xEnd;
+                    } else if (marker.x === line.xEnd) {
+                        marker.x = line.xStart;
+                    }
+                    marker.y = line.y; // マーカーのy座標も更新
                     marker.score += powerupEffects[index] === 'double_score' ? 20 : 10;
+                    passedLine = true; // 横線通過フラグを立てる
                     moved = true;
                     break;
                 }
             }
+
             if (!moved) {
                 marker.y += marker.speed;
+                passedLine = false; // 次の横線に到達したらフラグを戻す
             }
+
             // Check for traps
             traps.forEach(trap => {
                 if (Math.abs(marker.x - trap.x) <= 5 && Math.abs(marker.y - trap.y) <= 5) {
