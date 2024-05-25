@@ -130,6 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startGame() {
+        isRunning = true;
         markers.forEach((marker, index) => {
             markerTrails[index] = [];
             moveMarker(index);
@@ -211,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isRunning) {
             stopGame();
         } else {
-            isRunning = true;
             startGame();
         }
     });
