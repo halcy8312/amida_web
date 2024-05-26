@@ -5,50 +5,52 @@ import os
 from celery import Celery
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
-app.config['DOWNLOAD_FOLDER'] = 'static/downloads/'
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'insecure_key_for_dev_only')  # 安全なキーを設定
+app.config['DOWNLOAD_FOLDER'] = 'downloads/'
 
-# 環境変数からCeleryの設定を読み込む
-app.config['CELERY_BROKER_URL'] = os.getenv('CELERY_BROKER_URL')
-app.config['RESULT_BACKEND'] = os.getenv('RESULT_BACKEND')
+# Celery設定
+celery_broker_url = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')  # デフォルト値を設定
+celery_result_backend = os.getenv('CELERY_RESULT_BACKEND', 'rpc://')
 
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
-
-# 非推奨設定の対応
-celery.conf.update({
-    'broker_connection_retry_on_startup': True
-})
+celery = Celery(app.name, broker=celery_broker_url, backend=celery_result_backend)
 
 @celery.task
 def download_and_convert(url, choice, format, download_folder):
     ydl_opts = {
         'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo+bestaudio/best',
-        'outtmpl': os.path.join(download_folder, '%(title)s.%(ext)s')
+        'outtmpl': os.path.join(download_folder, '%(title)s.%(ext)s'),
+        'noplaylist': True,  # 再生リストのダウンロードを防ぐ
     }
+    
     try:
         with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(url, download=True)
             downloaded_file = ydl.prepare_filename(info_dict)
+
             if choice == 'audio':
                 audio = AudioSegment.from_file(downloaded_file)
-                filename, ext = os.path.splitext(downloaded_file)
+                filename, _ = os.path.splitext(downloaded_file)  # 拡張子を使用しないため _ で受ける
                 new_file = f"{filename}.{format}"
                 audio.export(new_file, format=format)
                 os.remove(downloaded_file)
                 downloaded_file = new_file
-        return os.path.basename(downloaded_file)
-    except Exception as e:
-        return str(e)
 
-@app.route('/')
+        return os.path.basename(downloaded_file)  # ファイル名のみを返す
+    except Exception as e:
+        # エラー処理を強化
+        app.logger.error(f"Download failed: {e}")  # エラーログを記録
+        return f"Error: {str(e)}"  # エラーメッセージを返す
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    if request.method == 'POST':
+        return download()  # POSTリクエストの場合はダウンロード処理を実行
+    return render_template('index.html')  # GETリクエストの場合はindex.htmlを返す
 
 @app.route('/download', methods=['POST'])
 def download():
     url = request.form['url']
-    choice = request.form['choice']
+    choice = request.form['downloadType']
     format = request.form.get('format', 'mp3')
     
     task = download_and_convert.delay(url, choice, format, app.config['DOWNLOAD_FOLDER'])

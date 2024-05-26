@@ -4,47 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OFF EASY</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
-        .format-buttons {
-            display: flex;
-            gap: 10px;
+        :root {
+            --main-color: #ff5722;
+            --accent-color: #e64a19;
+            --background-color: #333;
+            --text-color: #f5f5f5;
         }
-        .format-button {
-            padding: 10px;
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .btn-primary {
             background-color: var(--main-color);
-            color: white;
-            border: none;
-            cursor: pointer;
+            border-color: var(--main-color);
         }
-        .format-button.selected {
+
+        .btn-primary:hover {
             background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .btn-outline-primary {
+            border-color: var(--main-color);
+            color: var(--main-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--main-color);
+            color: var(--text-color);
         }
     </style>
-    <script>
-        function selectFormat(format) {
-            document.getElementById('selected-format').value = format;
-            document.getElementById('mp3-button').classList.remove('selected');
-            document.getElementById('wav-button').classList.remove('selected');
-            document.getElementById(format + '-button').classList.add('selected');
-        }
-
-        function toggleFormatButtons(choice) {
-            var formatButtons = document.getElementById('audio-format');
-            if (choice === 'audio') {
-                formatButtons.style.display = 'flex';
-            } else {
-                formatButtons.style.display = 'none';
-            }
-        }
-
-        window.onload = function() {
-            toggleFormatButtons(document.getElementById('choice').value);
-            selectFormat('mp3');
-        }
-    </script>
 </head>
 <body>
     <div class="container mt-5">
@@ -61,28 +57,61 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Download Options</h5>
-                <form action="/download" method="post">
+                <form action="/download" method="post" onsubmit="return validateForm()">
                     <div class="form-group">
                         <label for="url">URL:</label>
                         <input type="text" id="url" name="url" class="form-control" required>
+                        <div id="url-error" class="invalid-feedback">
+                            Please enter a valid URL.
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="choice">Download:</label>
-                        <select id="choice" name="choice" class="form-control" onchange="toggleFormatButtons(this.value)">
+                        <label for="downloadType">Download:</label>
+                        <select id="downloadType" name="downloadType" class="form-control" onchange="toggleAudioFormat(this.value)">
                             <option value="audio">Audio</option>
                             <option value="video">Video</option>
                         </select>
                     </div>
-                    <div id="audio-format" class="format-buttons">
-                        <button type="button" id="mp3-button" class="format-button" onclick="selectFormat('mp3')">MP3</button>
-                        <button type="button" id="wav-button" class="format-button" onclick="selectFormat('wav')">WAV</button>
+                    <div id="audioFormat" class="form-group">
+                        <label>Audio Format:</label><br>
+                        <div class="btn-group" role="group" aria-label="Audio format">
+                            <input type="radio" class="btn-check" name="format" id="mp3" value="mp3" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="mp3">MP3</label>
+                            <input type="radio" class="btn-check" name="format" id="wav" value="wav" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="wav">WAV</label>
+                        </div>
                     </div>
-                    <input type="hidden" id="selected-format" name="format" value="mp3">
                     <br>
                     <button type="submit" class="btn btn-primary">Download</button>
                 </form>
             </div>
         </div>
     </div>
+    <script>
+        function toggleAudioFormat(type) {
+            document.getElementById('audioFormat').style.display = (type === 'audio') ? 'block' : 'none';
+        }
+
+        function validateForm() {
+            let urlInput = document.getElementById('url');
+            let urlError = document.getElementById('url-error');
+            let validUrl = /^(ftp|http|https):\/\/[^ "]+$/.test(urlInput.value);
+
+            if (!validUrl) {
+                urlInput.classList.add('is-invalid');
+                urlError.textContent = "Please enter a valid URL.";
+                return false;
+            } else {
+                urlInput.classList.remove('is-invalid');
+                urlError.textContent = "";
+                return true;
+            }
+        }
+
+        window.onload = function() {
+            toggleAudioFormat(document.getElementById('downloadType').value);
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
