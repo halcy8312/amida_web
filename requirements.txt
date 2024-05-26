@@ -1,4 +1,5 @@
 Flask
-pytube
 gunicorn
 pydub
+yt-dlp
+ffmpeg
