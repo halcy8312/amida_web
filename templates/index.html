@@ -7,6 +7,15 @@
 </head>
 <body>
     <h1>Video/Audio Downloader</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     <form action="/download" method="post">
         <label for="url">YouTube URL:</label>
         <input type="text" id="url" name="url" required>
