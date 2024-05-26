@@ -1,5 +1,6 @@
 Flask
-gunicorn
-pydub
 yt-dlp
-ffmpeg
+pydub
+gunicorn
+celery
+redis

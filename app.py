@@ -2,10 +2,40 @@ from flask import Flask, request, render_template, send_from_directory, redirect
 from yt_dlp import YoutubeDL
 from pydub import AudioSegment
 import os
+from celery import Celery
+import os
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 app.config['DOWNLOAD_FOLDER'] = 'static/downloads/'
+
+# 環境変数からCeleryの設定を読み込む
+app.config['CELERY_BROKER_URL'] = os.getenv('CELERY_BROKER_URL')
+app.config['CELERY_RESULT_BACKEND'] = os.getenv('CELERY_RESULT_BACKEND')
+
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
+@celery.task
+def download_and_convert(url, choice, format, download_folder):
+    ydl_opts = {
+        'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo+bestaudio/best',
+        'outtmpl': os.path.join(download_folder, '%(title)s.%(ext)s')
+    }
+    try:
+        with YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(url, download=True)
+            downloaded_file = ydl.prepare_filename(info_dict)
+            if choice == 'audio':
+                audio = AudioSegment.from_file(downloaded_file)
+                filename, ext = os.path.splitext(downloaded_file)
+                new_file = f"{filename}.{format}"
+                audio.export(new_file, format=format)
+                os.remove(downloaded_file)
+                downloaded_file = new_file
+        return os.path.basename(downloaded_file)
+    except Exception as e:
+        return str(e)
 
 @app.route('/')
 def index():
@@ -15,30 +45,14 @@ def index():
 def download():
     url = request.form['url']
     choice = request.form['choice']
+    format = request.form.get('format', 'mp3')
     
-    ydl_opts = {
-        'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo+bestaudio/best',
-        'outtmpl': os.path.join(app.config['DOWNLOAD_FOLDER'], '%(title)s.%(ext)s')
-    }
-    
-    try:
-        with YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(url, download=True)
-            downloaded_file = ydl.prepare_filename(info_dict)
-            if choice == 'audio':
-                format = request.form['format']
-                audio = AudioSegment.from_file(downloaded_file)
-                filename, ext = os.path.splitext(downloaded_file)
-                new_file = f"{filename}.{format}"
-                audio.export(new_file, format=format)
-                os.remove(downloaded_file)
-                downloaded_file = new_file
-    except Exception as e:
-        flash(f'Failed to download: {str(e)}')
-        return redirect(url_for('index'))
-    
-    filename = os.path.basename(downloaded_file)
-    
+    task = download_and_convert.delay(url, choice, format, app.config['DOWNLOAD_FOLDER'])
+    flash('Download started. Please check back later.')
+    return redirect(url_for('index'))
+
+@app.route('/download/<filename>')
+def send_file(filename):
     return send_from_directory(directory=app.config['DOWNLOAD_FOLDER'], path=filename, as_attachment=True)
 
 if __name__ == '__main__':
