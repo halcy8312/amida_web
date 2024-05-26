@@ -3,7 +3,6 @@ from yt_dlp import YoutubeDL
 from pydub import AudioSegment
 import os
 from celery import Celery
-import os
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -11,10 +10,15 @@ app.config['DOWNLOAD_FOLDER'] = 'static/downloads/'
 
 # 環境変数からCeleryの設定を読み込む
 app.config['CELERY_BROKER_URL'] = os.getenv('CELERY_BROKER_URL')
-app.config['CELERY_RESULT_BACKEND'] = os.getenv('CELERY_RESULT_BACKEND')
+app.config['RESULT_BACKEND'] = os.getenv('RESULT_BACKEND')
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
+
+# 非推奨設定の対応
+celery.conf.update({
+    'broker_connection_retry_on_startup': True
+})
 
 @celery.task
 def download_and_convert(url, choice, format, download_folder):
