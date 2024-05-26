@@ -15,7 +15,6 @@ def index():
 def download():
     url = request.form['url']
     choice = request.form['choice']
-    format = request.form['format'] if choice == 'audio' else None
     
     ydl_opts = {
         'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo+bestaudio/best',
@@ -26,20 +25,19 @@ def download():
         with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(url, download=True)
             downloaded_file = ydl.prepare_filename(info_dict)
-            if choice == 'audio' and format:
+            if choice == 'audio':
+                format = request.form['format']
                 audio = AudioSegment.from_file(downloaded_file)
                 filename, ext = os.path.splitext(downloaded_file)
                 new_file = f"{filename}.{format}"
                 audio.export(new_file, format=format)
                 os.remove(downloaded_file)
-                output_file = new_file
-            else:
-                output_file = downloaded_file
+                downloaded_file = new_file
     except Exception as e:
         flash(f'Failed to download: {str(e)}')
         return redirect(url_for('index'))
     
-    filename = os.path.basename(output_file)
+    filename = os.path.basename(downloaded_file)
     
     return send_from_directory(directory=app.config['DOWNLOAD_FOLDER'], path=filename, as_attachment=True)
 
