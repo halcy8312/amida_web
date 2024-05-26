@@ -29,7 +29,8 @@
         }
 
         window.onload = function() {
-            selectFormat('wav');
+            selectFormat('mp3');
+            document.getElementById('choice').value = 'audio';
         }
     </script>
 </head>
@@ -58,9 +59,19 @@
             <button type="button" id="mp3-button" class="format-button" onclick="selectFormat('mp3')">MP3</button>
             <button type="button" id="wav-button" class="format-button" onclick="selectFormat('wav')">WAV</button>
         </div>
-        <input type="hidden" id="selected-format" name="format" value="wav">
+        <input type="hidden" id="selected-format" name="format" value="mp3">
         <br>
         <button type="submit">Download</button>
     </form>
+    <script>
+        document.getElementById('choice').addEventListener('change', function () {
+            var choice = this.value;
+            if (choice === 'audio') {
+                document.getElementById('audio-format').style.display = 'flex';
+            } else {
+                document.getElementById('audio-format').style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
