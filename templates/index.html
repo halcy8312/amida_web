@@ -50,11 +50,11 @@
         <br>
         <label for="choice">Download:</label>
         <select id="choice" name="choice">
-            <option value="video">Video</option>
             <option value="audio">Audio</option>
+            <option value="video">Video</option>
         </select>
         <br>
-        <div id="audio-format" class="format-buttons" style="display:none;">
+        <div id="audio-format" class="format-buttons">
             <button type="button" id="mp3-button" class="format-button" onclick="selectFormat('mp3')">MP3</button>
             <button type="button" id="wav-button" class="format-button" onclick="selectFormat('wav')">WAV</button>
         </div>
@@ -62,15 +62,5 @@
         <br>
         <button type="submit">Download</button>
     </form>
-    <script>
-        document.getElementById('choice').addEventListener('change', function () {
-            var choice = this.value;
-            if (choice === 'audio') {
-                document.getElementById('audio-format').style.display = 'flex';
-            } else {
-                document.getElementById('audio-format').style.display = 'none';
-            }
-        });
-    </script>
 </body>
 </html>
