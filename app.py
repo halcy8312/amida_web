@@ -4,7 +4,7 @@ from pydub import AudioSegment
 import os
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Flaskのセッション管理用の秘密鍵
+app.secret_key = 'supersecretkey'
 app.config['DOWNLOAD_FOLDER'] = 'static/downloads/'
 
 @app.route('/')

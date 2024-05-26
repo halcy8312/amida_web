@@ -1,0 +1,29 @@
+:root {
+    --main-color: #4CAF50;
+    --accent-color: #45a049;
+    --background-color: #f5f5f5;
+    --text-color: #333;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Roboto', sans-serif;
+}
+
+.btn-primary {
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.dark-mode {
+    --background-color: #333;
+    --text-color: #f5f5f5;
+    --main-color: #ff5722;
+    --accent-color: #e64a19;
+}

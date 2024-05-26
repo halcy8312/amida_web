@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OFF EASY</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
         .format-buttons {
             display: flex;
@@ -11,13 +14,13 @@
         }
         .format-button {
             padding: 10px;
-            background-color: #4CAF50;
+            background-color: var(--main-color);
             color: white;
             border: none;
             cursor: pointer;
         }
         .format-button.selected {
-            background-color: #45a049;
+            background-color: var(--accent-color);
         }
     </style>
     <script>
@@ -35,34 +38,44 @@
     </script>
 </head>
 <body>
-    <h1>OFF EASY</h1>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-    <form action="/download" method="post">
-        <label for="url">URL:</label>
-        <input type="text" id="url" name="url" required>
-        <br>
-        <label for="choice">Download:</label>
-        <select id="choice" name="choice">
-            <option value="audio">Audio</option>
-            <option value="video">Video</option>
-        </select>
-        <br>
-        <div id="audio-format" class="format-buttons">
-            <button type="button" id="mp3-button" class="format-button" onclick="selectFormat('mp3')">MP3</button>
-            <button type="button" id="wav-button" class="format-button" onclick="selectFormat('wav')">WAV</button>
+    <div class="container mt-5">
+        <h1>OFF EASY</h1>
+        <button id="theme-toggle" class="btn btn-secondary mb-3">Toggle Dark Mode</button>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-warning" role="alert">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Download Options</h5>
+                <form action="/download" method="post">
+                    <div class="form-group">
+                        <label for="url">URL:</label>
+                        <input type="text" id="url" name="url" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="choice">Download:</label>
+                        <select id="choice" name="choice" class="form-control">
+                            <option value="audio">Audio</option>
+                            <option value="video">Video</option>
+                        </select>
+                    </div>
+                    <div id="audio-format" class="format-buttons">
+                        <button type="button" id="mp3-button" class="format-button" onclick="selectFormat('mp3')">MP3</button>
+                        <button type="button" id="wav-button" class="format-button" onclick="selectFormat('wav')">WAV</button>
+                    </div>
+                    <input type="hidden" id="selected-format" name="format" value="mp3">
+                    <br>
+                    <button type="submit" class="btn btn-primary">Download</button>
+                </form>
+            </div>
         </div>
-        <input type="hidden" id="selected-format" name="format" value="mp3">
-        <br>
-        <button type="submit">Download</button>
-    </form>
+    </div>
     <script>
         document.getElementById('choice').addEventListener('change', function () {
             var choice = this.value;
@@ -71,6 +84,10 @@
             } else {
                 document.getElementById('audio-format').style.display = 'none';
             }
+        });
+
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
         });
     </script>
 </body>
