@@ -6,7 +6,7 @@
     <title>DownCo</title>
 </head>
 <body>
-    <h1>DownCo</h1>
+    <h1>EGDouga</h1>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <ul>
@@ -26,7 +26,36 @@
             <option value="audio">Audio</option>
         </select>
         <br>
+        <div id="video-quality" style="display:none;">
+            <label for="video-resolution">Resolution:</label>
+            <select id="video-resolution" name="resolution">
+                <option value="high">Highest</option>
+                <option value="medium">Medium</option>
+                <option value="low">Lowest</option>
+            </select>
+        </div>
+        <div id="audio-quality" style="display:none;">
+            <label for="audio-bitrate">Bitrate:</label>
+            <select id="audio-bitrate" name="bitrate">
+                <option value="high">Highest</option>
+                <option value="medium">Medium</option>
+                <option value="low">Lowest</option>
+            </select>
+        </div>
+        <br>
         <button type="submit">Download</button>
     </form>
+    <script>
+        document.getElementById('choice').addEventListener('change', function () {
+            var choice = this.value;
+            if (choice === 'video') {
+                document.getElementById('video-quality').style.display = 'block';
+                document.getElementById('audio-quality').style.display = 'none';
+            } else {
+                document.getElementById('video-quality').style.display = 'none';
+                document.getElementById('audio-quality').style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
