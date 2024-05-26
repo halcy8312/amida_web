@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, send_from_directory, redirect, url_for, flash
 from pytube import YouTube, exceptions
+from pydub import AudioSegment
 import os
 
 app = Flask(__name__)
@@ -14,6 +15,7 @@ def index():
 def download():
     url = request.form['url']
     choice = request.form['choice']
+    format = request.form['format'] if choice == 'audio' else None
     
     try:
         yt = YouTube(url)
@@ -34,6 +36,13 @@ def download():
     
     try:
         output_file = stream.download(output_path=app.config['DOWNLOAD_FOLDER'])
+        filename, ext = os.path.splitext(output_file)
+        if choice == 'audio' and format:
+            audio = AudioSegment.from_file(output_file)
+            new_file = f"{filename}.{format}"
+            audio.export(new_file, format=format)
+            os.remove(output_file)
+            output_file = new_file
     except Exception as e:
         flash(f'Failed to download: {str(e)}')
         return redirect(url_for('index'))
