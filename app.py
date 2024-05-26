@@ -28,24 +28,9 @@ def download():
         return redirect(url_for('index'))
     
     if choice == 'video':
-        resolution = request.form['resolution']
-        if resolution == 'high':
-            stream = yt.streams.get_highest_resolution()
-        elif resolution == 'medium':
-            stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().get_by_resolution('720p')
-            if stream is None:
-                stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
-        else:
-            stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').asc().first()
+        stream = yt.streams.get_highest_resolution()
     else:
-        bitrate = request.form['bitrate']
-        if bitrate == 'high':
-            stream = yt.streams.filter(only_audio=True).order_by('abr').desc().first()
-        elif bitrate == 'medium':
-            streams = yt.streams.filter(only_audio=True).order_by('abr').desc()
-            stream = streams[1] if len(streams) > 1 else streams[0]
-        else:
-            stream = yt.streams.filter(only_audio=True).order_by('abr').asc().first()
+        stream = yt.streams.filter(only_audio=True).order_by('abr').desc().first()
     
     try:
         output_file = stream.download(output_path=app.config['DOWNLOAD_FOLDER'])

@@ -1,61 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DownCo</title>
-</head>
-<body>
-    <h1>EGDouga</h1>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-    <form action="/download" method="post">
-        <label for="url">URL:</label>
-        <input type="text" id="url" name="url" required>
-        <br>
-        <label for="choice">Download:</label>
-        <select id="choice" name="choice">
-            <option value="video">Video</option>
-            <option value="audio">Audio</option>
-        </select>
-        <br>
-        <div id="video-quality" style="display:none;">
-            <label for="video-resolution">Resolution:</label>
-            <select id="video-resolution" name="resolution">
-                <option value="high">Highest</option>
-                <option value="medium">Medium</option>
-                <option value="low">Lowest</option>
-            </select>
-        </div>
-        <div id="audio-quality" style="display:none;">
-            <label for="audio-bitrate">Bitrate:</label>
-            <select id="audio-bitrate" name="bitrate">
-                <option value="high">Highest</option>
-                <option value="medium">Medium</option>
-                <option value="low">Lowest</option>
-            </select>
-        </div>
-        <br>
-        <button type="submit">Download</button>
-    </form>
-    <script>
-        document.getElementById('choice').addEventListener('change', function () {
-            var choice = this.value;
-            if (choice === 'video') {
-                document.getElementById('video-quality').style.display = 'block';
-                document.getElementById('audio-quality').style.display = 'none';
-            } else {
-                document.getElementById('video-quality').style.display = 'none';
-                document.getElementById('audio-quality').style.display = 'block';
-            }
-        });
-    </script>
-</body>
-</html>
+from flask import Flask, request, render_template, send_from_directory, redirect, url_for, flash
+from pytube import YouTube, exceptions
+import os
+
+app = Flask(__name__)
+app.secret_key = 'supersecretkey'  # Flaskのセッション管理用の秘密鍵
+app.config['DOWNLOAD_FOLDER'] = 'static/downloads/'
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/download', methods=['POST'])
+def download():
+    url = request.form['url']
+    choice = request.form['choice']
+    
+    try:
+        yt = YouTube(url)
+    except exceptions.RegexMatchError:
+        flash('Invalid YouTube URL. Please try again.')
+        return redirect(url_for('index'))
+    except exceptions.VideoUnavailable:
+        flash('The video is unavailable. Please try another URL.')
+        return redirect(url_for('index'))
+    except Exception as e:
+        flash(f'An error occurred: {str(e)}')
+        return redirect(url_for('index'))
+    
+    if choice == 'video':
+        stream = yt.streams.get_highest_resolution()
+    else:
+        stream = yt.streams.filter(only_audio=True).order_by('abr').desc().first()
+    
+    try:
+        output_file = stream.download(output_path=app.config['DOWNLOAD_FOLDER'])
+    except Exception as e:
+        flash(f'Failed to download: {str(e)}')
+        return redirect(url_for('index'))
+    
+    filename = os.path.basename(output_file)
+    
+    return send_from_directory(directory=app.config['DOWNLOAD_FOLDER'], path=filename, as_attachment=True)
+
+if __name__ == '__main__':
+    if not os.path.exists(app.config['DOWNLOAD_FOLDER']):
+        os.makedirs(app.config['DOWNLOAD_FOLDER'])
+    app.run(debug=True)
