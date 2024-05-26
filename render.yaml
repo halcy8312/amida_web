@@ -8,3 +8,7 @@ services:
     envVars:
       - key: FLASK_ENV
         value: production
+      - key: CELERY_BROKER_URL
+        value: redis://:password@hostname:6379/0
+      - key: RESULT_BACKEND
+        value: redis://:password@hostname:6379/0
