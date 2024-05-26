@@ -11,7 +11,6 @@
         .format-buttons {
             display: flex;
             gap: 10px;
-            display: none; /* 初期状態は非表示 */
         }
         .format-button {
             padding: 10px;
@@ -32,16 +31,24 @@
             document.getElementById(format + '-button').classList.add('selected');
         }
 
+        function toggleFormatButtons(choice) {
+            var formatButtons = document.getElementById('audio-format');
+            if (choice === 'audio') {
+                formatButtons.style.display = 'flex';
+            } else {
+                formatButtons.style.display = 'none';
+            }
+        }
+
         window.onload = function() {
+            toggleFormatButtons(document.getElementById('choice').value);
             selectFormat('mp3');
-            document.getElementById('choice').value = 'audio';
         }
     </script>
 </head>
 <body>
     <div class="container mt-5">
         <h1>OFF EASY</h1>
-        <button id="theme-toggle" class="btn btn-secondary mb-3">Toggle Dark Mode</button>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="alert alert-warning" role="alert">
@@ -77,24 +84,5 @@
             </div>
         </div>
     </div>
-    <script>
-        function toggleFormatButtons(choice) {
-            var formatButtons = document.getElementById('audio-format');
-            if (choice === 'audio') {
-                formatButtons.style.display = 'flex';
-            } else {
-                formatButtons.style.display = 'none';
-            }
-        }
-
-        document.getElementById('theme-toggle').addEventListener('click', function() {
-            document.body.classList.toggle('dark-mode');
-        });
-
-        window.onload = function() {
-            toggleFormatButtons(document.getElementById('choice').value);
-            selectFormat('mp3');
-        }
-    </script>
 </body>
 </html>
