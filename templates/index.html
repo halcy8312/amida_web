@@ -3,13 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amida Lottery</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Video/Audio Downloader</title>
 </head>
 <body>
-    <canvas id="amida-canvas" width="320" height="550"></canvas>
-    <button id="start-stop-btn">Start/Stop</button>
-    <input type="range" id="speed-slider" min="0.2" max="2" value="0.2" step="0.1">
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <h1>Video/Audio Downloader</h1>
+    <form action="/download" method="post">
+        <label for="url">YouTube URL:</label>
+        <input type="text" id="url" name="url" required>
+        <br>
+        <label for="choice">Download:</label>
+        <select id="choice" name="choice">
+            <option value="video">Video</option>
+            <option value="audio">Audio</option>
+        </select>
+        <br>
+        <button type="submit">Download</button>
+    </form>
 </body>
 </html>
