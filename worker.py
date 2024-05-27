@@ -1,8 +1,6 @@
-from app import celery  # celery インスタンスのみをインポート
+from app import create_app
 
-# タスクのインポート (必要であれば)
-from app.tasks import download_video, download_audio
+_, celery = create_app()  # create_app から app と celery を取得
 
-# ワーカーの実行
 if __name__ == '__main__':
-    celery.worker_main() 
+    celery.worker_main()  # Celery ワーカーを開始
