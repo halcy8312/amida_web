@@ -30,4 +30,3 @@ def create_app():
         import app.tasks
 
     return app
-    
