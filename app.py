@@ -3,7 +3,6 @@ from yt_dlp import YoutubeDL
 from pydub import AudioSegment
 import os
 from celery import Celery
-from celery.result import AsyncResult
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'insecure_key_for_dev_only')  # 安全なキーを設定
@@ -56,16 +55,7 @@ def download():
     
     task = download_and_convert.delay(url, choice, format, app.config['DOWNLOAD_FOLDER'])
     flash('Download started. Please check back later.')
-    return redirect(url_for('index', task_id=task.id))
-
-@app.route('/status/<task_id>')
-def task_status(task_id):
-    task = AsyncResult(task_id, app=celery)
-    if task.state == 'SUCCESS':
-        return redirect(url_for('send_file', filename=task.result))
-    else:
-        flash(f'Task {task_id} is still in progress. Please wait.')
-        return redirect(url_for('index'))
+    return redirect(url_for('index'))
 
 @app.route('/download/<filename>')
 def send_file(filename):
