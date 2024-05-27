@@ -1,6 +1,9 @@
 import youtube_dl
 from celery import shared_task
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 @shared_task
 def download_video(url):
@@ -11,11 +14,15 @@ def download_video(url):
     if not os.path.exists('downloads'):
         os.makedirs('downloads')
         
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        info_dict = ydl.extract_info(url, download=True)
-        file_path = ydl.prepare_filename(info_dict)
-    
-    return file_path
+    try:
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(url, download=True)
+            file_path = ydl.prepare_filename(info_dict)
+        logger.debug(f'Video downloaded successfully: {file_path}')
+        return file_path
+    except Exception as e:
+        logger.error(f'Error downloading video: {e}', exc_info=True)
+        raise
 
 @shared_task
 def download_audio(url, format):
@@ -31,8 +38,12 @@ def download_audio(url, format):
     if not os.path.exists('downloads'):
         os.makedirs('downloads')
         
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        info_dict = ydl.extract_info(url, download=True)
-        file_path = ydl.prepare_filename(info_dict)
-    
-    return file_path
+    try:
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(url, download=True)
+            file_path = ydl.prepare_filename(info_dict)
+        logger.debug(f'Audio downloaded successfully: {file_path}')
+        return file_path
+    except Exception as e:
+        logger.error(f'Error downloading audio: {e}', exc_info=True)
+        raise
