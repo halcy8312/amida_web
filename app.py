@@ -3,6 +3,7 @@ from yt_dlp import YoutubeDL
 from pydub import AudioSegment
 import os
 from celery import Celery, current_task
+import re
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'insecure_key_for_dev_only')
@@ -19,11 +20,15 @@ def progress_hook(d):
         percent = d['_percent_str']
         current_task.update_state(state='PROGRESS', meta={'percent': percent})
 
+def sanitize_filename(filename):
+    # 特殊文字を置き換え
+    return re.sub(r'[\\/*?:"<>|]', "_", filename)
+
 @celery.task(bind=True)
 def download_and_convert(self, url, choice, format, download_folder):
     ydl_opts = {
         'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo+bestaudio/best',
-        'outtmpl': os.path.join(download_folder, '%(title).40s.%(ext)s'),  # タイトルを最大40文字に制限
+        'outtmpl': os.path.join(download_folder, '%(title)s.%(ext)s'),
         'noplaylist': True,
         'progress_hooks': [progress_hook],
     }
@@ -32,16 +37,18 @@ def download_and_convert(self, url, choice, format, download_folder):
         with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(url, download=True)
             downloaded_file = ydl.prepare_filename(info_dict)
+            sanitized_file = sanitize_filename(downloaded_file)
+            os.rename(downloaded_file, sanitized_file)
 
             if choice == 'audio':
-                audio = AudioSegment.from_file(downloaded_file)
-                filename, _ = os.path.splitext(downloaded_file)
+                audio = AudioSegment.from_file(sanitized_file)
+                filename, _ = os.path.splitext(sanitized_file)
                 new_file = f"{filename}.{format}"
                 audio.export(new_file, format=format)
-                os.remove(downloaded_file)
-                downloaded_file = new_file
+                os.remove(sanitized_file)
+                sanitized_file = new_file
 
-        return {'status': 'COMPLETED', 'result': os.path.basename(downloaded_file)}
+        return {'status': 'COMPLETED', 'result': os.path.basename(sanitized_file)}
     except Exception as e:
         app.logger.error(f"Download failed: {e}")
         return {'status': 'FAILED', 'result': f"Error: {str(e)}"}
