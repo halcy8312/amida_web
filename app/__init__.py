@@ -17,4 +17,8 @@ def create_app():
 
     celery.conf.update(app.config)
 
+    # タスクの自動登録
+    with app.app_context():
+        import app.tasks
+
     return app
