@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, send_file
+from flask import Blueprint, render_template, request, send_file, current_app
 from .tasks import download_video, download_audio
 import os
 
@@ -6,7 +6,12 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    return render_template('index.html')
+    try:
+        current_app.logger.debug('Rendering index.html')
+        return render_template('index.html')
+    except Exception as e:
+        current_app.logger.error(f'Error rendering template: {e}')
+        return "An error occurred", 500
 
 @main.route('/download', methods=['POST'])
 def download():
