@@ -85,6 +85,13 @@
                 document.getElementById('audio-format').style.display = 'none';
             }
         });
+
+        // Initialize display of audio format buttons
+        window.onload = function() {
+            selectFormat('mp3');
+            document.getElementById('choice').value = 'audio';
+            document.getElementById('audio-format').style.display = 'flex';
+        }
     </script>
 </body>
 </html>
