@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'insecure_key_for_dev_only')  # 安全なキーを設定
 app.config['DOWNLOAD_FOLDER'] = 'downloads/'
 
+
 # Celery設定
 celery_broker_url = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')  # デフォルト値を設定
 celery_result_backend = os.getenv('CELERY_RESULT_BACKEND', 'rpc://')
