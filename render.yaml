@@ -2,7 +2,7 @@ services:
   - type: web
     name: video-downloader
     env: python
-    plan: free
+    plan: standard
     buildCommand: ""
     startCommand: gunicorn app:app
     envVars:
