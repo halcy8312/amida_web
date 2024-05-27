@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, send_from_directory, redirect
 from yt_dlp import YoutubeDL
 from pydub import AudioSegment
 import os
-from celery import Celery
+from celery import Celery, current_task
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'insecure_key_for_dev_only')
@@ -14,12 +14,18 @@ celery_result_backend = os.getenv('CELERY_RESULT_BACKEND', 'rpc://')
 
 celery = Celery(app.name, broker=celery_broker_url, backend=celery_result_backend)
 
-@celery.task
-def download_and_convert(url, choice, format, download_folder):
+def progress_hook(d):
+    if d['status'] == 'downloading':
+        percent = d['_percent_str']
+        current_task.update_state(state='PROGRESS', meta={'percent': percent})
+
+@celery.task(bind=True)
+def download_and_convert(self, url, choice, format, download_folder):
     ydl_opts = {
         'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo+bestaudio/best',
-        'outtmpl': os.path.join(download_folder, '%(title)s.%(ext)s'),
+        'outtmpl': os.path.join(download_folder, '%(title).40s.%(ext)s'),  # タイトルを最大40文字に制限
         'noplaylist': True,
+        'progress_hooks': [progress_hook],
     }
     
     try:
@@ -52,7 +58,7 @@ def download():
     choice = request.form['downloadType']
     format = request.form.get('format', 'mp3')
     
-    task = download_and_convert.delay(url, choice, format, app.config['DOWNLOAD_FOLDER'])
+    task = download_and_convert.apply_async(args=[url, choice, format, app.config['DOWNLOAD_FOLDER']])
     flash('Download started. Please check back later.')
     return redirect(url_for('check_status', task_id=task.id))
 
@@ -63,6 +69,12 @@ def check_status(task_id):
         response = {
             'state': task.state,
             'status': 'Pending...'
+        }
+    elif task.state == 'PROGRESS':
+        response = {
+            'state': task.state,
+            'status': 'Downloading...',
+            'progress': task.info.get('percent', 0)
         }
     elif task.state != 'FAILURE':
         response = {
