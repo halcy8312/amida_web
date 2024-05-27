@@ -2,11 +2,35 @@ from flask import Flask, request, render_template, send_from_directory, redirect
 from yt_dlp import YoutubeDL
 from pydub import AudioSegment
 import os
+import urllib.parse
+from celery import Celery
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'insecure_key_for_dev_only')  # 安全なキーを設定
 app.config['DOWNLOAD_FOLDER'] = 'downloads/'
+app.config['CELERY_BROKER_URL'] = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')  # デフォルト値を設定
+app.config['CELERY_RESULT_BACKEND'] = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
 
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        broker=app.config['CELERY_BROKER_URL'],
+        backend=app.config['CELERY_RESULT_BACKEND']
+    )
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
+
+    class ContextTask(TaskBase):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+celery = make_celery(app)
+
+@celery.task
 def download_and_convert(url, choice, format, download_folder):
     ydl_opts = {
         'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo+bestaudio/best',
@@ -45,16 +69,24 @@ def download():
     choice = request.form['downloadType']
     format = request.form.get('format', 'mp3')
     
-    filename = download_and_convert(url, choice, format, app.config['DOWNLOAD_FOLDER'])
-    if filename.startswith("Error:"):
-        flash('Failed to download: ' + filename)
+    task = download_and_convert.delay(url, choice, format, app.config['DOWNLOAD_FOLDER'])
+    flash('Download started. Please check back later.')
+    return redirect(url_for('index', task_id=task.id))
+
+@app.route('/status/<task_id>')
+def task_status(task_id):
+    task = celery.AsyncResult(task_id)
+    if task.state == 'SUCCESS':
+        return redirect(url_for('send_file', filename=task.result))
+    else:
+        flash(f'Task {task_id} is still in progress. Please wait.')
         return redirect(url_for('index'))
-    return redirect(url_for('send_file', filename=filename))
 
 @app.route('/download/<filename>')
 def send_file(filename):
+    safe_filename = urllib.parse.quote(filename)
     response = send_from_directory(directory=app.config['DOWNLOAD_FOLDER'], path=filename, as_attachment=True)
-    response.headers["Content-Disposition"] = f"attachment; filename={filename}"  # Content-Dispositionヘッダーを追加
+    response.headers["Content-Disposition"] = f"attachment; filename*=UTF-8''{safe_filename}"  # Content-Dispositionヘッダーを追加
     return response
 
 if __name__ == '__main__':
