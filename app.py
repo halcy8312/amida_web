@@ -35,10 +35,10 @@ def download_and_convert(url, choice, format, download_folder):
                 os.remove(downloaded_file)
                 downloaded_file = new_file
 
-        return os.path.basename(downloaded_file)
+        return {'status': 'COMPLETED', 'result': os.path.basename(downloaded_file)}
     except Exception as e:
         app.logger.error(f"Download failed: {e}")
-        return f"Error: {str(e)}"
+        return {'status': 'FAILED', 'result': f"Error: {str(e)}"}
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -53,6 +53,7 @@ def download():
     format = request.form.get('format', 'mp3')
     
     task = download_and_convert.delay(url, choice, format, app.config['DOWNLOAD_FOLDER'])
+    flash('Download started. Please check back later.')
     return redirect(url_for('check_status', task_id=task.id))
 
 @app.route('/status/<task_id>')
@@ -66,9 +67,9 @@ def check_status(task_id):
     elif task.state != 'FAILURE':
         response = {
             'state': task.state,
-            'status': task.info.get('status', '')
+            'status': task.info['status'] if isinstance(task.info, dict) else str(task.info)
         }
-        if 'result' in task.info:
+        if isinstance(task.info, dict) and 'result' in task.info:
             response['result'] = task.info['result']
     else:
         response = {
@@ -80,8 +81,8 @@ def check_status(task_id):
 @app.route('/download/file/<task_id>')
 def download_file(task_id):
     task = download_and_convert.AsyncResult(task_id)
-    if task.state == 'SUCCESS':
-        filename = task.result
+    if task.state == 'SUCCESS' and isinstance(task.info, dict):
+        filename = task.info['result']
         return send_from_directory(directory=app.config['DOWNLOAD_FOLDER'], path=filename, as_attachment=True)
     else:
         flash('File is not ready yet, please check back later.')
