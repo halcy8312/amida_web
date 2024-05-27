@@ -1,6 +1,7 @@
 from celery import Celery
 from app import celery  
-import youtube_dl
+import yt_dlp as youtube_dl
+
 
 @celery.task(bind=True)
 def download_video(self, url, media_type, audio_format=None):

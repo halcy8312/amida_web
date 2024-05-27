@@ -1,6 +1,6 @@
 Flask
 redis
 celery
-youtube_dl
+yt-dlp
 flask-cors
 gunicorn
