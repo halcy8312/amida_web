@@ -59,8 +59,7 @@ def download():
     format = request.form.get('format', 'mp3')
     
     task = download_and_convert.apply_async(args=[url, choice, format, app.config['DOWNLOAD_FOLDER']])
-    flash('Download started. Please check back later.')
-    return redirect(url_for('check_status', task_id=task.id))
+    return jsonify({'task_id': task.id})
 
 @app.route('/status/<task_id>')
 def check_status(task_id):

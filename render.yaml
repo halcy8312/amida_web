@@ -2,13 +2,19 @@ services:
   - type: web
     name: video-downloader
     env: python
-    plan: free
+    plan: standard
     buildCommand: ""
     startCommand: gunicorn app:app
     envVars:
       - key: FLASK_ENV
         value: production
-      - key: CELERY_BROKER_URL
-        value: redis://:password@hostname:6379/0
-      - key: RESULT_BACKEND
-        value: redis://:password@hostname:6379/0
+
+  - type: worker
+    name: video-downloader-worker
+    env: python
+    plan: standard
+    buildCommand: ""
+    startCommand: celery -A celery worker --loglevel=info
+    envVars:
+      - key: FLASK_ENV
+        value: production
