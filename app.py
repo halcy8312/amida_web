@@ -58,7 +58,7 @@ def download_and_convert(self, url, choice, format, download_folder):
                 sanitized_file = new_file
 
             app.logger.debug(f"Final file path: {sanitized_file}")
-            return {'status': 'COMPLETED', 'result': os.path.basename(sanitized_file)}
+            return {'status': 'COMPLETED', 'result': sanitized_file}  # ファイルパスを直接返す
     except Exception as e:
         app.logger.error(f"Download failed: {e}")
         return {'status': 'FAILED', 'result': f"Error: {str(e)}"}
@@ -110,9 +110,11 @@ def check_status(task_id):
 def download_file(task_id):
     task = download_and_convert.AsyncResult(task_id)
     if task.state == 'SUCCESS' and isinstance(task.info, dict):
-        filename = task.info['result']
-        app.logger.debug(f"Attempting to send file: {filename}")
-        return send_from_directory(directory=app.config['DOWNLOAD_FOLDER'], path=filename, as_attachment=True)
+        file_path = task.info['result']
+        if os.path.exists(file_path):
+            return send_from_directory(directory=os.path.dirname(file_path), path=os.path.basename(file_path), as_attachment=True)
+        else:
+            return "File not found.", 404
     else:
         flash('File is not ready yet, please check back later.')
         return redirect(url_for('index'))
