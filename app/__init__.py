@@ -15,10 +15,21 @@ def create_app():
     from .routes import main
     app.register_blueprint(main)
 
-    celery.conf.update(app.config)
+    # Celery 設定を Flask アプリケーションのコンテキスト内で行う
+    def make_celery(app):
+        celery.conf.update(app.config)
+        TaskBase = celery.Task
+        class ContextTask(TaskBase):
+            abstract = True
+            def __call__(self, *args, **kwargs):
+                with app.app_context():
+                    return TaskBase.__call__(self, *args, **kwargs)
+        celery.Task = ContextTask
+        return celery
 
-    # タスクの自動登録
-    with app.app_context():
-        import app.tasks
+    celery = make_celery(app)
+
+    # タスクの自動登録を関数内で行う
+    import app.tasks 
 
     return app
