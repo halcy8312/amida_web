@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, send_from_directory, redirect, url_for, flash, jsonify
+from flask import Flask, request, render_template, send_from_directory, redirect, url_for, jsonify
 from yt_dlp import YoutubeDL
 from pydub import AudioSegment
 import os
@@ -30,6 +30,9 @@ def sanitize_filename(filename):
 
 @celery.task(bind=True)
 def download_and_convert(self, url, choice, format, download_folder):
+    if not os.path.exists(download_folder):
+        os.makedirs(download_folder)
+    
     ydl_opts = {
         'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo+bestaudio/best',
         'outtmpl': os.path.join(download_folder, '%(title)s.%(ext)s'),

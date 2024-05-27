@@ -1,4 +1,4 @@
-　<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -94,7 +94,12 @@
                         }, 1000);
                     } else if (data.state === 'SUCCESS') {
                         $('#status').text('Download complete!');
-                        $('#download-link').html('<a href="/download/file/' + task_id + '">Click here to download</a>');
+                        const downloadLink = $('<a>')
+                            .attr('href', '/download/file/' + task_id)
+                            .attr('download', '')
+                            .appendTo('#download-link');
+                        downloadLink[0].click();
+                        downloadLink.remove();
                     } else {
                         $('#status').text('Error: ' + data.status);
                     }
