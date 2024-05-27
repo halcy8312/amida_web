@@ -1,21 +1,28 @@
-{% extends "base.html" %}
-
-{% block content %}
-<h1>Video/Audio Downloader</h1>
-<form method="POST" action="/download">
-    <label for="url">URL:</label>
-    <input type="text" id="url" name="url" required>
-    <div>
-        <input type="radio" id="video" name="media_type" value="video" checked>
-        <label for="video">Video</label>
-        <input type="radio" id="audio" name="media_type" value="audio">
-        <label for="audio">Audio</label>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>動画・音声ダウンローダー</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>動画・音声ダウンローダー</h1>
+        <form method="POST" id="download-form">
+            <input type="url" name="url" placeholder="URLを入力" required>
+            <div class="options">
+                <input type="radio" name="media_type" value="video" id="video" checked>
+                <label for="video">動画</label>
+                <input type="radio" name="media_type" value="audio" id="audio">
+                <label for="audio">音声</label>
+            </div>
+            <div class="audio-formats" style="display: none;">
+                <button type="button" data-format="mp3">MP3</button>
+                <button type="button" data-format="wav">WAV</button>
+            </div>
+            <button type="submit">ダウンロード</button>
+        </form>
+        <div id="status"></div>
     </div>
-    <div id="audio_format_selection" style="display:none;">
-        <button type="button" onclick="selectFormat('mp3')">MP3</button>
-        <button type="button" onclick="selectFormat('wav')">WAV</button>
-        <input type="hidden" id="audio_format" name="audio_format" value="mp3">
-    </div>
-    <button type="submit">Download</button>
-</form>
-{% endblock %}
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
