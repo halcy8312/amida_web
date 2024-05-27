@@ -59,7 +59,9 @@ def download():
 
 @app.route('/download/<filename>')
 def send_file(filename):
-    return send_from_directory(directory=app.config['DOWNLOAD_FOLDER'], path=filename, as_attachment=True)
+    response = send_from_directory(directory=app.config['DOWNLOAD_FOLDER'], path=filename, as_attachment=True)
+    response.headers["Content-Disposition"] = f"attachment; filename={filename}"  # Content-Dispositionヘッダーを追加
+    return response
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['DOWNLOAD_FOLDER']):
