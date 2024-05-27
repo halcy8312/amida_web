@@ -3,9 +3,9 @@ from celery import Celery
 from flask_cors import CORS
 import os
 
-def create_app():
 
-    celery = Celery(__name__, broker=os.getenv('CELERY_BROKER_URL'))
+def create_app():
+    celery = Celery(__name__, broker=os.getenv('CELERY_BROKER_URL'))  # Celeryインスタンスを関数内で定義
 
     app = Flask(__name__, template_folder='../templates')
     app.config['CELERY_BROKER_URL'] = os.getenv('CELERY_BROKER_URL')
@@ -33,4 +33,4 @@ def create_app():
     # タスクの自動登録を関数内で行う
     import app.tasks 
 
-    return app, celery
+    return app, celery  # app と celery の両方を返す
