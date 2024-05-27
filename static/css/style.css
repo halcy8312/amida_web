@@ -20,3 +20,13 @@ body {
     background-color: var(--accent-color);
     border-color: var(--accent-color);
 }
+
+.btn-outline-primary {
+    border-color: var(--main-color);
+    color: var(--main-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--main-color);
+    color: var(--text-color);
+}

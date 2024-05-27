@@ -2,20 +2,11 @@ from flask import Flask, request, render_template, send_from_directory, redirect
 from yt_dlp import YoutubeDL
 from pydub import AudioSegment
 import os
-from celery import Celery
-from celery.result import AsyncResult
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'insecure_key_for_dev_only')  # 安全なキーを設定
 app.config['DOWNLOAD_FOLDER'] = 'downloads/'
 
-# Celery設定
-celery_broker_url = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')  # デフォルト値を設定
-celery_result_backend = os.getenv('CELERY_RESULT_BACKEND', 'rpc://')
-
-celery = Celery(app.name, broker=celery_broker_url, backend=celery_result_backend)
-
-@celery.task
 def download_and_convert(url, choice, format, download_folder):
     ydl_opts = {
         'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo+bestaudio/best',
@@ -54,18 +45,11 @@ def download():
     choice = request.form['downloadType']
     format = request.form.get('format', 'mp3')
     
-    task = download_and_convert.delay(url, choice, format, app.config['DOWNLOAD_FOLDER'])
-    flash('Download started. Please check back later.')
-    return redirect(url_for('index', task_id=task.id))
-
-@app.route('/status/<task_id>')
-def task_status(task_id):
-    task = AsyncResult(task_id, app=celery)
-    if task.state == 'SUCCESS':
-        return redirect(url_for('send_file', filename=task.result))
-    else:
-        flash(f'Task {task_id} is still in progress. Please wait.')
+    filename = download_and_convert(url, choice, format, app.config['DOWNLOAD_FOLDER'])
+    if filename.startswith("Error:"):
+        flash('Failed to download: ' + filename)
         return redirect(url_for('index'))
+    return redirect(url_for('send_file', filename=filename))
 
 @app.route('/download/<filename>')
 def send_file(filename):
