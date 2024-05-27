@@ -4,17 +4,20 @@ from pydub import AudioSegment
 import os
 from celery import Celery, current_task
 import re
+import logging
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'insecure_key_for_dev_only')
 app.config['DOWNLOAD_FOLDER'] = 'downloads/'
-
 
 # Celery設定
 celery_broker_url = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 celery_result_backend = os.getenv('CELERY_RESULT_BACKEND', 'rpc://')
 
 celery = Celery(app.name, broker=celery_broker_url, backend=celery_result_backend)
+
+# ログ設定
+logging.basicConfig(level=logging.DEBUG)
 
 def progress_hook(d):
     if d['status'] == 'downloading':
@@ -38,8 +41,10 @@ def download_and_convert(self, url, choice, format, download_folder):
         with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(url, download=True)
             downloaded_file = ydl.prepare_filename(info_dict)
-            sanitized_file = sanitize_filename(downloaded_file)
+            sanitized_file = os.path.join(download_folder, sanitize_filename(os.path.basename(downloaded_file)))
             os.rename(downloaded_file, sanitized_file)
+
+            app.logger.debug(f"Sanitized file path: {sanitized_file}")
 
             if choice == 'audio':
                 audio = AudioSegment.from_file(sanitized_file)
@@ -49,7 +54,8 @@ def download_and_convert(self, url, choice, format, download_folder):
                 os.remove(sanitized_file)
                 sanitized_file = new_file
 
-        return {'status': 'COMPLETED', 'result': os.path.basename(sanitized_file)}
+            app.logger.debug(f"Final file path: {sanitized_file}")
+            return {'status': 'COMPLETED', 'result': os.path.basename(sanitized_file)}
     except Exception as e:
         app.logger.error(f"Download failed: {e}")
         return {'status': 'FAILED', 'result': f"Error: {str(e)}"}
@@ -102,6 +108,7 @@ def download_file(task_id):
     task = download_and_convert.AsyncResult(task_id)
     if task.state == 'SUCCESS' and isinstance(task.info, dict):
         filename = task.info['result']
+        app.logger.debug(f"Attempting to send file: {filename}")
         return send_from_directory(directory=app.config['DOWNLOAD_FOLDER'], path=filename, as_attachment=True)
     else:
         flash('File is not ready yet, please check back later.')
