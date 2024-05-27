@@ -7,40 +7,12 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <style>
-        .format-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .format-button {
-            padding: 10px;
-            background-color: var(--main-color);
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .format-button.selected {
-            background-color: var(--accent-color);
-        }
-    </style>
-    <script>
-        function selectFormat(format) {
-            document.getElementById('selected-format').value = format;
-            document.getElementById('mp3-button').classList.remove('selected');
-            document.getElementById('wav-button').classList.remove('selected');
-            document.getElementById(format + '-button').classList.add('selected');
-        }
-
-        window.onload = function() {
-            selectFormat('mp3');
-            document.getElementById('choice').value = 'audio';
-        }
-    </script>
 </head>
 <body class="dark-mode">
-    <div class="container mt-5">
+    <header class="container mt-5">
         <h1>OFF EASY</h1>
+    </header>
+    <main class="container mt-3">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="alert alert-warning" role="alert">
@@ -75,23 +47,10 @@
                 </form>
             </div>
         </div>
-    </div>
-    <script>
-        document.getElementById('choice').addEventListener('change', function () {
-            var choice = this.value;
-            if (choice === 'audio') {
-                document.getElementById('audio-format').style.display = 'flex';
-            } else {
-                document.getElementById('audio-format').style.display = 'none';
-            }
-        });
-
-        // Initialize display of audio format buttons
-        window.onload = function() {
-            selectFormat('mp3');
-            document.getElementById('choice').value = 'audio';
-            document.getElementById('audio-format').style.display = 'flex';
-        }
-    </script>
+    </main>
+    <footer class="container mt-3">
+        <p>&copy; 2024 OFF EASY</p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

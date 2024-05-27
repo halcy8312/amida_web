@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, send_from_directory, redirect, url_for, flash
-from yt_dlp import YoutubeDL
+from yt_dlp import YoutubeDL, DownloadError, ExtractorError
 from pydub import AudioSegment
 import os
 
@@ -33,8 +33,14 @@ def download():
                 audio.export(new_file, format=format)
                 os.remove(downloaded_file)
                 downloaded_file = new_file
-    except Exception as e:
+    except DownloadError as e:
         flash(f'Failed to download: {str(e)}')
+        return redirect(url_for('index'))
+    except ExtractorError as e:
+        flash(f'Error extracting video information: {str(e)}')
+        return redirect(url_for('index'))
+    except Exception as e:
+        flash(f'An unexpected error occurred: {str(e)}')
         return redirect(url_for('index'))
     
     filename = os.path.basename(downloaded_file)
