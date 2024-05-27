@@ -8,6 +8,7 @@ if __name__ == '__main__':
     # ログ設定
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+    app.logger.setLevel(logging.DEBUG)
     app.logger.debug('Starting application with Waitress')
 
     from waitress import serve
