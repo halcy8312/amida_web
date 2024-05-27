@@ -19,12 +19,19 @@ def download():
     media_type = request.form['media_type']
     audio_format = request.form.get('audio_format', 'mp3')
     
-    if media_type == 'video':
-        result = download_video.delay(url)
-    else:
-        result = download_audio.delay(url, audio_format)
-    
-    result.wait()
-    file_path = result.get()
-    
-    return send_file(file_path, as_attachment=True)
+    try:
+        if media_type == 'video':
+            result = download_video.delay(url)
+        else:
+            result = download_audio.delay(url, audio_format)
+        
+        result.wait()
+        file_path = result.get()
+        
+        if not os.path.exists(file_path):
+            return "File not found", 404
+        
+        return send_file(file_path, as_attachment=True)
+    except Exception as e:
+        current_app.logger.error(f'Error during download: {e}')
+        return "An error occurred during download", 500

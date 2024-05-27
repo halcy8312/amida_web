@@ -1,5 +1,6 @@
 import youtube_dl
 from celery import shared_task
+import os
 
 @shared_task
 def download_video(url):
@@ -7,9 +8,13 @@ def download_video(url):
         'format': 'best',
         'outtmpl': 'downloads/%(title)s.%(ext)s',
     }
+    if not os.path.exists('downloads'):
+        os.makedirs('downloads')
+        
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info_dict = ydl.extract_info(url, download=True)
         file_path = ydl.prepare_filename(info_dict)
+    
     return file_path
 
 @shared_task
@@ -23,7 +28,11 @@ def download_audio(url, format):
         }],
         'outtmpl': 'downloads/%(title)s.%(ext)s',
     }
+    if not os.path.exists('downloads'):
+        os.makedirs('downloads')
+        
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info_dict = ydl.extract_info(url, download=True)
         file_path = ydl.prepare_filename(info_dict)
+    
     return file_path
