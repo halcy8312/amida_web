@@ -1,6 +1,5 @@
 Flask
-yt-dlp
-pydub
-gunicorn
-celery
 redis
+celery
+youtube_dl
+flask-cors
