@@ -24,8 +24,13 @@ document.getElementById('download-form').addEventListener('submit', function(eve
             document.getElementById('message').style.display = 'block';
             document.getElementById('message').innerText = data.error;
         } else {
-            document.getElementById('download-link').style.display = 'block';
-            document.getElementById('download-url').href = data.download_url;
+            const downloadUrl = data.download_url;
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', '');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     })
     .catch((error) => {
