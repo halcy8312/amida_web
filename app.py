@@ -48,7 +48,7 @@ def download():
         return jsonify({'error': f'Failed to generate download URL: {str(e)}'}), 500
     except Exception as e:
         logging.error(f"Unexpected error: {str(e)}")
-        return jsonify({'error': f'An unexpected error occurred: {str(e)}')}), 500
+        return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500  # 括弧の対応を修正
 
 if __name__ == '__main__':
     app.run(debug=True)
