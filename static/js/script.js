@@ -27,7 +27,6 @@ document.getElementById('download-form').addEventListener('submit', function(eve
             const downloadUrl = data.download_url;
             const downloadLink = document.getElementById('download-url');
             downloadLink.href = downloadUrl;
-            downloadLink.setAttribute('download', '');
             document.getElementById('download-link').style.display = 'block';
         }
     })
