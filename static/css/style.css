@@ -1,19 +1,53 @@
-/* 新しい背景色とボタンのスタイルを設定 */
-
+/* ベーススタイルのリセット */
 body {
-    background-color: #000000; /* 背景を黒色に設定 */
-    color: #f5f5f5; /* 文字色を白に設定 */
+    margin: 0;
+    padding: 0;
+    background-color: #121212; /* 背景をダークグレーに設定 */
+    color: #E0E0E0; /* 文字色を明るいグレーに設定 */
     font-family: 'Roboto', sans-serif;
 }
 
+.container {
+    max-width: 800px;
+}
+
+header h1 {
+    text-align: center;
+    color: #00E676; /* アクセントカラーとして緑を使用 */
+}
+
+.card {
+    background-color: #1E1E1E; /* カードの背景色を少し明るいダークグレーに */
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+.card-title {
+    color: #00E676; /* カードタイトルのアクセントカラー */
+}
+
+.form-group label {
+    color: #B0B0B0; /* フォームラベルの色を調整 */
+}
+
+input.form-control, select.form-control {
+    background-color: #2C2C2C; /* 入力フィールドの背景色 */
+    border: 1px solid #444; /* 入力フィールドのボーダー色 */
+    color: #E0E0E0; /* 入力フィールドの文字色 */
+}
+
 .btn-primary {
-    background-color: #4CAF50; /* メインボタンの色を緑色に設定 */
-    border-color: #4CAF50;
+    background-color: #00E676; /* メインボタンの色を緑に設定 */
+    border: none;
+    color: #121212; /* ボタンの文字色をダークグレーに */
+    transition: background-color 0.3s, transform 0.1s;
 }
 
 .btn-primary:hover {
-    background-color: #45a049; /* ホバー時のメインボタンの色 */
-    border-color: #45a049;
+    background-color: #00C764; /* ホバー時のボタンの色を少し暗く */
+    transform: scale(1.05); /* ホバー時の視覚的な効果 */
 }
 
 .format-buttons {
@@ -24,8 +58,8 @@ body {
 
 .format-button {
     padding: 10px;
-    background-color: #4CAF50; /* ボタンの色を緑色に設定 */
-    color: white;
+    background-color: #00E676; /* ボタンの色を緑に設定 */
+    color: #121212; /* ボタンの文字色をダークグレーに */
     border: none;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.1s; /* ボタンの視覚的フィードバック */
@@ -33,6 +67,11 @@ body {
 
 .format-button.selected,
 .format-button:hover {
-    background-color: #45a049; /* 選択時およびホバー時のボタンの色 */
+    background-color: #00C764; /* 選択時およびホバー時のボタンの色 */
     transform: scale(1.05); /* 押した際の視覚的な効果 */
+}
+
+footer p {
+    text-align: center;
+    color: #B0B0B0; /* フッターの文字色 */
 }
