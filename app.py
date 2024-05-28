@@ -14,8 +14,9 @@ def index():
 
 @app.route('/download', methods=['POST'])
 def download():
-    url = request.form['url']
-    choice = request.form['choice']
+    data = request.get_json()  # JSON形式のリクエストデータを取得
+    url = data.get('url')
+    choice = data.get('choice')
     
     ydl_opts = {
         'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
@@ -47,7 +48,7 @@ def download():
         return jsonify({'error': f'Failed to generate download URL: {str(e)}'}), 500
     except Exception as e:
         logging.error(f"Unexpected error: {str(e)}")
-        return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
+        return jsonify({'error': f'An unexpected error occurred: {str(e)}')}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
