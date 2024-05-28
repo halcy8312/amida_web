@@ -21,12 +21,18 @@ def download():
     choice = request.form['choice']
     
     ydl_opts = {
-        'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo+bestaudio/best',
+        'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
         'outtmpl': os.path.join(app.config['DOWNLOAD_FOLDER'], '%(title)s.%(ext)s')
     }
     
     try:
         with YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(url, download=False)
+            duration = info_dict.get('duration', 0)
+            if duration > 360:
+                flash('The video length exceeds 6 minutes and cannot be downloaded.')
+                return redirect(url_for('index'))
+            
             info_dict = ydl.extract_info(url, download=True)
             downloaded_file = ydl.prepare_filename(info_dict)
             logging.info(f"Downloaded file: {downloaded_file}")

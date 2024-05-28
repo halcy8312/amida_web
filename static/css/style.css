@@ -1,8 +1,10 @@
 :root {
     --main-color: #ff5722;
     --accent-color: #e64a19;
-    --background-color: #333;
+    --background-color: #000000;
     --text-color: #f5f5f5;
+    --button-color: #8bc34a;
+    --button-hover-color: #7cb342;
 }
 
 body {
@@ -29,12 +31,13 @@ body {
 
 .format-button {
     padding: 10px;
-    background-color: var(--main-color);
+    background-color: var(--button-color);
     color: white;
     border: none;
     cursor: pointer;
 }
 
-.format-button.selected {
-    background-color: var(--accent-color);
+.format-button.selected,
+.format-button:hover {
+    background-color: var(--button-hover-color);
 }

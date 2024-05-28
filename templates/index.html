@@ -13,6 +13,9 @@
         <h1>OFF EASY</h1>
     </header>
     <main class="container mt-3">
+        <div class="alert alert-info" role="alert">
+            Note: Only videos shorter than 6 minutes can be downloaded.
+        </div>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="alert alert-warning" role="alert">
