@@ -1,82 +1,50 @@
-/* ベーススタイルのリセット */
+:root {
+    --main-color: #4CAF50;
+    --accent-color: #45a049;
+    --background-color: #000000; /* 背景色を黒に設定 */
+    --text-color: #FFFFFF; /* テキスト色を白に設定 */
+}
+
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #121212; /* 背景をダークグレーに設定 */
-    color: #E0E0E0; /* 文字色を明るいグレーに設定 */
+    background-color: var(--background-color);
+    color: var(--text-color);
     font-family: 'Roboto', sans-serif;
 }
 
-.container {
-    max-width: 800px;
+.btn-primary {
+    background-color: #00BFFF; /* 水色に設定 */
+    border-color: #00BFFF;
+    color: white;
 }
 
-header h1.styled-title {
+.btn-primary:hover {
+    background-color: #00A5E0; /* ホバー時の色を少し暗く */
+    border-color: #00A5E0;
+}
+
+.format-button {
+    background-color: #4CAF50; /* 黄緑色 */
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.format-button.selected {
+    background-color: #45a049; /* 選択されたボタンの色 */
+}
+
+.format-button:active {
+    transform: scale(0.95); /* ボタンを押したときのフィードバック */
+}
+
+.styled-title {
     text-align: center;
-    color: #00E676; /* アクセントカラーとして緑を使用 */
-    font-family: 'Lobster', cursive;
+    color: #00E676;
+    font-family: 'Raleway', sans-serif;
     font-size: 3em;
     font-weight: bold;
     letter-spacing: 0.1em;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-}
-
-.card {
-    background-color: #1E1E1E; /* カードの背景色を少し明るいダークグレーに */
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px;
-}
-
-.card-title {
-    color: #00E676; /* カードタイトルのアクセントカラー */
-}
-
-.form-group label {
-    color: #B0B0B0; /* フォームラベルの色を調整 */
-}
-
-input.form-control, select.form-control {
-    background-color: #2C2C2C; /* 入力フィールドの背景色 */
-    border: 1px solid #444; /* 入力フィールドのボーダー色 */
-    color: #E0E0E0; /* 入力フィールドの文字色 */
-}
-
-.btn-primary {
-    background-color: #00BFFF; /* メインボタンの色を水色に設定 */
-    border: none;
-    color: #121212; /* ボタンの文字色をダークグレーに */
-    transition: background-color 0.3s, transform 0.1s;
-}
-
-.btn-primary:hover {
-    background-color: #00A3CC; /* ホバー時のボタンの色を少し暗く */
-    transform: scale(1.05); /* ホバー時の視覚的な効果 */
-}
-
-.format-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.format-button {
-    padding: 10px;
-    background-color: #00E676; /* ボタンの色を緑に設定 */
-    color: #121212; /* ボタンの文字色をダークグレーに */
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s; /* ボタンの視覚的フィードバック */
-}
-
-.format-button.selected,
-.format-button:hover {
-    background-color: #00C764; /* 選択時およびホバー時のボタンの色 */
-    transform: scale(1.05); /* 押した際の視覚的な効果 */
-}
-
-footer p {
-    text-align: center;
-    color: #B0B0B0; /* フッターの文字色 */
 }
