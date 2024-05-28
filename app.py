@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, send_from_directory, redirect, url_for, flash
-from yt_dlp import YoutubeDL, DownloadError, ExtractorError
+from yt_dlp import YoutubeDL, DownloadError
 from pydub import AudioSegment
 import os
 
@@ -35,9 +35,6 @@ def download():
                 downloaded_file = new_file
     except DownloadError as e:
         flash(f'Failed to download: {str(e)}')
-        return redirect(url_for('index'))
-    except ExtractorError as e:
-        flash(f'Error extracting video information: {str(e)}')
         return redirect(url_for('index'))
     except Exception as e:
         flash(f'An unexpected error occurred: {str(e)}')

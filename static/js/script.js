@@ -18,4 +18,4 @@ document.getElementById('choice').addEventListener('change', function () {
     } else {
         document.getElementById('audio-format').style.display = 'none';
     }
-});     
+});
