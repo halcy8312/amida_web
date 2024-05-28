@@ -2,10 +2,14 @@ from flask import Flask, request, render_template, send_from_directory, redirect
 from yt_dlp import YoutubeDL, DownloadError
 from pydub import AudioSegment
 import os
+import logging
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 app.config['DOWNLOAD_FOLDER'] = 'static/downloads/'
+
+# ログ設定
+logging.basicConfig(level=logging.INFO)
 
 @app.route('/')
 def index():
@@ -25,6 +29,7 @@ def download():
         with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(url, download=True)
             downloaded_file = ydl.prepare_filename(info_dict)
+            logging.info(f"Downloaded file: {downloaded_file}")
             if choice == 'audio':
                 format = request.form['format']
                 audio = AudioSegment.from_file(downloaded_file)
@@ -33,11 +38,14 @@ def download():
                 audio.export(new_file, format=format)
                 os.remove(downloaded_file)
                 downloaded_file = new_file
+                logging.info(f"Converted file to {format}: {downloaded_file}")
     except DownloadError as e:
         flash(f'Failed to download: {str(e)}')
+        logging.error(f"DownloadError: {str(e)}")
         return redirect(url_for('index'))
     except Exception as e:
         flash(f'An unexpected error occurred: {str(e)}')
+        logging.error(f"Unexpected error: {str(e)}")
         return redirect(url_for('index'))
     
     filename = os.path.basename(downloaded_file)
