@@ -11,9 +11,14 @@ body {
     max-width: 800px;
 }
 
-header h1 {
+header h1.styled-title {
     text-align: center;
     color: #00E676; /* アクセントカラーとして緑を使用 */
+    font-family: 'Lobster', cursive;
+    font-size: 3em;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .card {
