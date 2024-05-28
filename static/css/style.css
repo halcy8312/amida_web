@@ -39,14 +39,14 @@ input.form-control, select.form-control {
 }
 
 .btn-primary {
-    background-color: #00E676; /* メインボタンの色を緑に設定 */
+    background-color: #00BFFF; /* メインボタンの色を水色に設定 */
     border: none;
     color: #121212; /* ボタンの文字色をダークグレーに */
     transition: background-color 0.3s, transform 0.1s;
 }
 
 .btn-primary:hover {
-    background-color: #00C764; /* ホバー時のボタンの色を少し暗く */
+    background-color: #00A3CC; /* ホバー時のボタンの色を少し暗く */
     transform: scale(1.05); /* ホバー時の視覚的な効果 */
 }
 
