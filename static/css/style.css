@@ -3,11 +3,12 @@
     --accent-color: #45a049;
     --background-color: #000000;
     --text-color: #FFFFFF;
-    --button-color: #00BFFF;
-    --button-hover-color: #00A5E0;
-    --title-color: #00E676;
+    --button-color: #00BFFF; /* 水色 */
+    --button-hover-color: #00A5E0; /* 水色のホバー色 */
+    --title-color: #00E676; /* 黄緑色 */
     --button-text-color: #FFFFFF;
-    --neon-color: #39FF14;
+    --neon-color: #39FF14; /* 黄緑色のネオンカラー */
+    --button-neon-color: #00BFFF; /* 水色のネオンカラー */
 }
 
 body {
@@ -59,10 +60,10 @@ header {
 }
 
 .btn-primary {
-    background-color: var(--neon-color);
-    border-color: var(--neon-color);
+    background-color: var(--button-neon-color);
+    border-color: var(--button-neon-color);
     color: var(--button-text-color);
-    box-shadow: 0 0 5px rgba(57, 255, 20, 0.7), 0 0 10px rgba(57, 255, 20, 0.7);
+    box-shadow: 0 0 5px rgba(0, 191, 255, 0.7), 0 0 10px rgba(0, 191, 255, 0.7), 0 0 15px rgba(0, 191, 255, 0.7), 0 0 20px rgba(0, 191, 255, 0.7);
 }
 
 .btn-primary:hover {
