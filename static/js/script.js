@@ -25,12 +25,10 @@ document.getElementById('download-form').addEventListener('submit', function(eve
             document.getElementById('message').innerText = data.error;
         } else {
             const downloadUrl = data.download_url;
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.setAttribute('download', '');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const downloadLink = document.getElementById('download-url');
+            downloadLink.href = downloadUrl;
+            downloadLink.setAttribute('download', '');
+            document.getElementById('download-link').style.display = 'block';
         }
     })
     .catch((error) => {
