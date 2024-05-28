@@ -18,7 +18,9 @@ def download():
     choice = request.form['choice']
     
     ydl_opts = {
-        'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]'
+        'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
+        'noplaylist': True,
+        'quiet': True
     }
     
     try:
@@ -28,9 +30,17 @@ def download():
             if duration > 360:
                 return jsonify({'error': 'The video length exceeds 6 minutes and cannot be downloaded.'}), 400
             
-            download_url = ydl.prepare_filename(info_dict)
-            logging.info(f"Generated download URL: {download_url}")
+            # ダウンロードURLを取得
+            formats = info_dict.get('formats', [])
+            if choice == 'audio':
+                download_url = next((f['url'] for f in formats if f['ext'] == 'm4a'), None)
+            else:
+                download_url = next((f['url'] for f in formats if f['ext'] == 'mp4'), None)
             
+            if not download_url:
+                return jsonify({'error': 'Failed to find a suitable download URL.'}), 500
+            
+            logging.info(f"Generated download URL: {download_url}")
             return jsonify({'download_url': download_url}), 200
     except DownloadError as e:
         logging.error(f"DownloadError: {str(e)}")
