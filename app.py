@@ -1,12 +1,9 @@
-from flask import Flask, request, render_template, send_from_directory, redirect, url_for, flash
+from flask import Flask, request, render_template, jsonify
 from yt_dlp import YoutubeDL, DownloadError
-from pydub import AudioSegment
-import os
 import logging
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
-app.config['DOWNLOAD_FOLDER'] = 'static/downloads/'
 
 # ログ設定
 logging.basicConfig(level=logging.INFO)
@@ -21,8 +18,7 @@ def download():
     choice = request.form['choice']
     
     ydl_opts = {
-        'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
-        'outtmpl': os.path.join(app.config['DOWNLOAD_FOLDER'], '%(title)s.%(ext)s')
+        'format': 'bestaudio/best' if choice == 'audio' else 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]'
     }
     
     try:
@@ -30,35 +26,18 @@ def download():
             info_dict = ydl.extract_info(url, download=False)
             duration = info_dict.get('duration', 0)
             if duration > 360:
-                flash('The video length exceeds 6 minutes and cannot be downloaded.')
-                return redirect(url_for('index'))
+                return jsonify({'error': 'The video length exceeds 6 minutes and cannot be downloaded.'}), 400
             
-            info_dict = ydl.extract_info(url, download=True)
-            downloaded_file = ydl.prepare_filename(info_dict)
-            logging.info(f"Downloaded file: {downloaded_file}")
-            if choice == 'audio':
-                format = request.form['format']
-                audio = AudioSegment.from_file(downloaded_file)
-                filename, ext = os.path.splitext(downloaded_file)
-                new_file = f"{filename}.{format}"
-                audio.export(new_file, format=format)
-                os.remove(downloaded_file)
-                downloaded_file = new_file
-                logging.info(f"Converted file to {format}: {downloaded_file}")
+            download_url = ydl.prepare_filename(info_dict)
+            logging.info(f"Generated download URL: {download_url}")
+            
+            return jsonify({'download_url': download_url}), 200
     except DownloadError as e:
-        flash(f'Failed to download: {str(e)}')
         logging.error(f"DownloadError: {str(e)}")
-        return redirect(url_for('index'))
+        return jsonify({'error': f'Failed to generate download URL: {str(e)}'}), 500
     except Exception as e:
-        flash(f'An unexpected error occurred: {str(e)}')
         logging.error(f"Unexpected error: {str(e)}")
-        return redirect(url_for('index'))
-    
-    filename = os.path.basename(downloaded_file)
-    
-    return send_from_directory(directory=app.config['DOWNLOAD_FOLDER'], path=filename, as_attachment=True)
+        return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    if not os.path.exists(app.config['DOWNLOAD_FOLDER']):
-        os.makedirs(app.config['DOWNLOAD_FOLDER'])
     app.run(debug=True)
