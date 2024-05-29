@@ -1,78 +1,110 @@
 :root {
-    --main-color: #00E676;
-    --accent-color: #00C853;
-    --background-color: #121212;
+    --main-color: #4CAF50;
+    --accent-color: #45a049;
+    --background-color:
+
+ #000000;
     --text-color: #FFFFFF;
-    --button-hover-color: #00FF00;
-    --neon-text-color: #39FF14;
-    --button-background-color: #0091EA; /* 水色 */
+    --button-color: #00BFFF; /* 水色 */
+    --button-hover-color: #00A5E0; /* 水色のホバー色 */
+    --title-color: #00E676; /* 黄緑色 */
+    --button-text-color: #FFFFFF;
+    --neon-color: #39FF14; /* 黄緑色のネオンカラー */
+    --button-neon-color: #00BFFF; /* 水色のネオンカラー */
 }
 
 body {
     background-color: var(--background-color);
     color: var(--text-color);
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-h1.styled-title {
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+header {
     text-align: center;
-    color: var(--neon-text-color);
+    margin-top: 20px;
+}
+
+.styled-title {
+    color: var(--neon-color);
     font-family: 'Raleway', sans-serif;
     font-size: 3em;
     font-weight: bold;
     letter-spacing: 0.1em;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 5px rgba(57, 255, 20, 0.7), 0 0 10px rgba(57, 255, 20, 0.7), 0 0 15px rgba(57, 255, 20, 0.7), 0 0 20px rgba(57, 255, 20, 0.7), 0 0 25px rgba(57, 255, 20, 0.7);
 }
 
-nav .nav-tabs .nav-link {
-    color: var(--text-color);
+.alert {
+    width: 80%;
+    margin: 10px auto;
 }
 
-nav .nav-tabs .nav-link.active {
-    color: var(--main-color);
-    background-color: var(--background-color);
-    border-color: var(--main-color);
-}
-
-.container h2 {
-    color: var(--main-color);
-}
-
-.card-header button {
-    width: 100%;
-    text-align: left;
-    color: var(--text-color);
-    background-color: var(--background-color);
-    border: none;
-    outline: none;
-    font-size: 1.2em;
-    padding: 10px 15px;
-}
-
-.card-header button:hover, .card-header button:focus {
-    color: var(--button-hover-color);
-}
-
-.card-body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    border-top: 1px solid var(--main-color);
-}
-
-footer p {
-    text-align: center;
-    color: var(--text-color);
-    margin-top: 20px;
+.card {
+    width: 80%;
+    margin: 20px auto;
+    background-color: #FFFFFF;
+    color: #000000;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary {
-    background-color: var(--button-background-color);
-    border-color: var(--button-background-color);
-    color: var(--text-color);
+    background-color: var(--button-neon-color);
+    border-color: var(--button-neon-color);
+    color: var(--button-text-color);
+    box-shadow: 0 0 5px rgba(0, 191, 255, 0.7), 0 0 10px rgba(0, 191, 255, 0.7), 0 0 15px rgba(0, 191, 255, 0.7), 0 0 20px rgba(0, 191, 255, 0.7);
 }
 
 .btn-primary:hover {
     background-color: var(--button-hover-color);
     border-color: var(--button-hover-color);
-    color: var(--text-color);
+}
+
+.format-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.format-button {
+    background-color: var(--neon-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 20px;
+    box-shadow: 0 0 5px rgba(57, 255, 20, 0.7), 0 0 10px rgba(57, 255, 20, 0.7);
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.format-button.selected {
+    background-color: var(--accent-color);
+}
+
+.format-button:active {
+    transform: scale(0.95);
+}
+
+.format-button:hover {
+    box-shadow: 0 6px 12px rgba(57, 255, 20, 0.7);
+}
+
+footer {
+    text-align: center;
+    margin-top: auto;
+    padding: 10px;
 }
