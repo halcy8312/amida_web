@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify, send_from_directory
+from flask import Flask, request, render_template, jsonify, send_file
 from yt_dlp import YoutubeDL, DownloadError
 import logging
 import os
@@ -19,18 +19,6 @@ if not os.path.exists(app.config['DOWNLOAD_FOLDER']):
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/privacy')
-def privacy():
-    return render_template('privacy.html')
-
-@app.route('/terms')
-def terms():
-    return render_template('terms.html')
-
-@app.route('/contact')
-def contact():
-    return render_template('contact.html')
 
 @app.route('/download', methods=['POST'])
 def download():
@@ -73,7 +61,11 @@ def download():
 
 @app.route('/download_file/<filename>')
 def download_file(filename):
-    return send_from_directory(app.config['DOWNLOAD_FOLDER'], filename, as_attachment=True)
+    file_path = os.path.join(app.config['DOWNLOAD_FOLDER'], filename)
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True, download_name=filename)
+    else:
+        return jsonify({'error': 'File not found.'}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
