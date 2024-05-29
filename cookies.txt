@@ -1,4 +1,8 @@
-GPS	1
-VISITOR_INFO1_LIVE	oy5r1mVu1g8
-VISITOR_PRIVACY_METADATA	CgJKUBIEGgAgLg%3D%3D
-YSC	dQ283jPj0mc
+# Netscape HTTP Cookie File
+# http://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+.youtube.com	TRUE	/	TRUE	1716980113	GPS	1
+.youtube.com	TRUE	/	TRUE	1732530313	VISITOR_INFO1_LIVE	eK6696MaMAY
+.youtube.com	TRUE	/	TRUE	1732530313	VISITOR_PRIVACY_METADATA	CgJKUBIEGgAgUg%3D%3D
+.youtube.com	TRUE	/	TRUE		YSC	liA6pEUBL4Q
