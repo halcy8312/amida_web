@@ -78,8 +78,23 @@ def download():
 @app.route('/download_file/<filename>')
 def download_file(filename):
     file_path = os.path.join(app.config['DOWNLOAD_FOLDER'], filename)
-    mime_type = mimetypes.guess_type(file_path)[0] or 'application/octet-stream'
-    return send_from_directory(app.config['DOWNLOAD_FOLDER'], filename, as_attachment=True, mimetype=mime_type)
+
+    # ファイルの種類によってMIMEタイプを設定
+    ext = os.path.splitext(filename)[1]  # 拡張子を取得
+    if ext in ['.mp3', '.wav']:
+        mime_type = 'audio/mpeg' if ext == '.mp3' else 'audio/wav'
+    elif ext == '.mp4':
+        mime_type = 'video/mp4'
+    else:
+        # その他のファイル形式はデフォルトのMIMEタイプを使用
+        mime_type = 'application/octet-stream'
+
+    return send_from_directory(
+        app.config['DOWNLOAD_FOLDER'],
+        filename,
+        as_attachment=True,
+        mimetype=mime_type
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
