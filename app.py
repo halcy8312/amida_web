@@ -53,7 +53,7 @@ def download():
         'outtmpl': os.path.join(app.config['DOWNLOAD_FOLDER'], '%(title)s.%(ext)s'),
         'rm-cache-dir': True,  # Clear cache
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-      'cookies': 'cookies.txt',  # Ensure you have a valid cookies.txt file
+        'cookies': os.path.join(os.path.expanduser("~"), "Documents", "cookies.txt"),  # Ensure you have a valid cookies.txt file in the same directory as app.py
         'allow-unplayable-formats': True  # Allow unplayable formats
     }
 
