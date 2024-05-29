@@ -35,7 +35,7 @@ def contact():
 
 @app.route('/download', methods=['POST'])
 def download():
-    data = request.get_json()  # JSON形式のリクエストデータを取得
+    data = request.get_json()
     url = data.get('url')
     choice = data.get('choice')
     format = data.get('format')
@@ -48,7 +48,9 @@ def download():
         'noplaylist': True,
         'quiet': True,
         'outtmpl': os.path.join(app.config['DOWNLOAD_FOLDER'], '%(title)s.%(ext)s'),
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'cookiefile': 'path/to/cookies.txt',  # クッキー情報を使用
+        'proxy': 'http://your-proxy-server:port'  # 必要に応じてプロキシを設定
     }
 
     try:
