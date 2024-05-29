@@ -3,3 +3,4 @@ gunicorn
 pydub
 yt-dlp
 ffmpeg
+pytube
