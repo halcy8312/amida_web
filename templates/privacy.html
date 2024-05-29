@@ -7,6 +7,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .accordion-button::after {
+            content: '\02795'; /* Unicode character for "+" sign */
+            font-size: 12px;
+            color: #777;
+            float: right;
+            margin-left: 5px;
+        }
+
+        .accordion-button.collapsed::after {
+            content: "\2796"; /* Unicode character for "-" sign */
+        }
+    </style>
 </head>
 <body>
     <header class="container mt-5">
@@ -30,10 +43,44 @@
     </header>
     <main class="container mt-3">
         <h2>Privacy Policy</h2>
-        <p>Here you can add your privacy policy details...</p>
+        <p>Your privacy is important to us. To better protect your privacy, you have a choice about how offeasy.com manages your online information and how your information is collected and used. To make this notice easy to find, we will publish it on offeasy's home page and in all places where personally identifiable information may be requested.</p>
+        
+        <div class="accordion" id="privacyAccordion">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link accordion-button" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Collection and Use of Information
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#privacyAccordion">
+                    <div class="card-body">
+                        Content to be decided later
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link accordion-button collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Consent to offeasy.jp's Privacy Policy
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#privacyAccordion">
+                    <div class="card-body">
+                        Content to be decided later
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
     <footer class="container mt-3">
         <p>&copy; 2024 OFF EASY</p>
     </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
