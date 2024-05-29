@@ -20,6 +20,18 @@ if not os.path.exists(app.config['DOWNLOAD_FOLDER']):
 def index():
     return render_template('index.html')
 
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
 @app.route('/download', methods=['POST'])
 def download():
     data = request.get_json()  # JSON形式のリクエストデータを取得
