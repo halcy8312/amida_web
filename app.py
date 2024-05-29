@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, jsonify, send_from_directory
 from yt_dlp import YoutubeDL, DownloadError
 import logging
 import os
+import urllib.parse
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -63,7 +64,7 @@ def download():
             file_name = os.path.basename(file_path)
             
             logging.info(f"Generated file path: {file_path}")
-            return jsonify({'download_url': f'/download_file/{file_name}'}), 200
+            return jsonify({'download_url': f'/download_file/{urllib.parse.quote(file_name)}'}), 200
     except DownloadError as e:
         logging.error(f"DownloadError: {str(e)}")
         return jsonify({'error': f'Failed to generate download URL: {str(e)}'}), 500
@@ -73,6 +74,8 @@ def download():
 
 @app.route('/download_file/<filename>')
 def download_file(filename):
+    # ファイル名をデコード
+    filename = urllib.parse.unquote(filename)
     return send_from_directory(app.config['DOWNLOAD_FOLDER'], filename, as_attachment=True)
 
 if __name__ == '__main__':
