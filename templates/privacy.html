@@ -7,19 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        .accordion-button::after {
-            content: '\02795'; /* Unicode character for "+" sign */
-            font-size: 12px;
-            color: #777;
-            float: right;
-            margin-left: 5px;
-        }
-
-        .accordion-button.collapsed::after {
-            content: "\2796"; /* Unicode character for "-" sign */
-        }
-    </style>
 </head>
 <body>
     <header class="container mt-5">

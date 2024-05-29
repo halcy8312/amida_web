@@ -29,45 +29,34 @@
         </nav>
     </header>
     <main class="container mt-3">
-        <div class="alert alert-info" role="alert">
-            Note: Only videos shorter than 6 minutes can be downloaded.
-        </div>
-        <div id="message" class="alert alert-warning" style="display: none;"></div>
-        <div id="loading" class="alert alert-info" style="display: none;">
-            Processing your request, please wait...
-        </div>
-        <div id="download-link" class="alert alert-success" style="display: none;">
-            <a href="#" id="download-url" target="_blank">Click here to download</a>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Download Options</h5>
-                <form id="download-form">
-                    <div class="form-group">
-                        <label for="url">URL:</label>
-                        <input type="text" id="url" name="url" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="choice">Download:</label>
-                        <select id="choice" name="choice" class="form-control">
-                            <option value="audio">Audio</option>
-                            <option value="video">Video</option>
-                        </select>
-                    </div>
-                    <div id="audio-format" class="format-buttons">
-                        <button type="button" id="mp3-button" class="format-button" onclick="selectFormat('mp3')">MP3</button>
-                        <button type="button" id="wav-button" class="format-button" onclick="selectFormat('wav')">WAV</button>
-                    </div>
-                    <input type="hidden" id="selected-format" name="format" value="mp3">
-                    <br>
-                    <button type="submit" class="btn btn-primary">GO!</button>
-                </form>
+        <h2>Download Options</h2>
+        <form id="download-form">
+            <div class="form-group">
+                <label for="url">URL:</label>
+                <input type="text" id="url" name="url" class="form-control" required>
             </div>
-        </div>
+            <div class="form-group">
+                <label for="choice">Download:</label>
+                <select id="choice" name="choice" class="form-control">
+                    <option value="audio">Audio</option>
+                    <option value="video">Video</option>
+                </select>
+            </div>
+            <div id="audio-format" class="format-buttons">
+                <button type="button" id="mp3-button" class="format-button" onclick="selectFormat('mp3')">MP3</button>
+                <button type="button" id="wav-button" class="format-button" onclick="selectFormat('wav')">WAV</button>
+            </div>
+            <input type="hidden" id="selected-format" name="format" value="mp3">
+            <br>
+            <button type="submit" class="btn btn-primary">GO!</button>
+        </form>
     </main>
     <footer class="container mt-3">
         <p>&copy; 2024 OFF EASY</p>
     </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
