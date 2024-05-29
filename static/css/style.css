@@ -1,9 +1,7 @@
 :root {
     --main-color: #4CAF50;
     --accent-color: #45a049;
-    --background-color:
-
- #000000;
+    --background-color: #000000;
     --text-color: #FFFFFF;
     --button-color: #00BFFF; /* 水色 */
     --button-hover-color: #00A5E0; /* 水色のホバー色 */
@@ -25,6 +23,7 @@ body {
 }
 
 .container {
+    max-width: 800px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -54,8 +53,8 @@ header {
 .card {
     width: 80%;
     margin: 20px auto;
-    background-color: #FFFFFF;
-    color: #000000;
+    background-color: #1E1E1E;
+    color: #FFFFFF;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -66,11 +65,13 @@ header {
     border-color: var(--button-neon-color);
     color: var(--button-text-color);
     box-shadow: 0 0 5px rgba(0, 191, 255, 0.7), 0 0 10px rgba(0, 191, 255, 0.7), 0 0 15px rgba(0, 191, 255, 0.7), 0 0 20px rgba(0, 191, 255, 0.7);
+    transition: background-color 0.3s, transform 0.1s;
 }
 
 .btn-primary:hover {
     background-color: var(--button-hover-color);
     border-color: var(--button-hover-color);
+    transform: scale(1.05);
 }
 
 .format-buttons {
@@ -91,20 +92,15 @@ header {
     transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 
-.format-button.selected {
-    background-color: var(--accent-color);
-}
-
-.format-button:active {
-    transform: scale(0.95);
-}
-
+.format-button.selected,
 .format-button:hover {
-    box-shadow: 0 6px 12px rgba(57, 255, 20, 0.7);
+    background-color: var(--accent-color);
+    transform: scale(1.05);
 }
 
 footer {
     text-align: center;
     margin-top: auto;
     padding: 10px;
+    color: var(--text-color);
 }
