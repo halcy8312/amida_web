@@ -48,7 +48,7 @@ def download():
         if choice == 'audio':
             stream = yt.streams.filter(only_audio=True).first()
         else:
-            stream = yt.streams.filter(file_extension='mp4').first()
+            stream = yt.streams.filter(progressive=True, file_extension='mp4').first()
 
         if not stream:
             return jsonify({'error': 'No suitable stream found.'}), 400
