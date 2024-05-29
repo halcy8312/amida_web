@@ -3,7 +3,7 @@ document.getElementById('download-form').addEventListener('submit', function(eve
     
     var urlInput = document.getElementById('url');
     var choiceSelect = document.getElementById('choice');
-    var selectedFormat = document.getElementById('selected-format').value; // 追加: 選択された音声形式
+    var selectedFormat = document.getElementById('selected-format').value; 
 
     // フォーム送信時に以前のメッセージとリンクをクリア
     document.getElementById('message').style.display = 'none';
@@ -18,7 +18,7 @@ document.getElementById('download-form').addEventListener('submit', function(eve
         body: JSON.stringify({
             url: urlInput.value,
             choice: choiceSelect.value,
-            format: selectedFormat // 追加: 選択された音声形式
+            format: selectedFormat
         })
     })
     .then(response => {
@@ -35,9 +35,9 @@ document.getElementById('download-form').addEventListener('submit', function(eve
         } else {
             const downloadUrl = data.download_url;
             const downloadLink = document.getElementById('download-url');
-            const filename = downloadUrl.split('/').pop(); // ファイル名を取得
+            const filename = downloadUrl.split('/').pop();
             downloadLink.href = downloadUrl;
-            downloadLink.download = filename; // ダウンロード属性を設定
+            downloadLink.download = filename;
             document.getElementById('download-link').style.display = 'block';
         }
     })

@@ -12,21 +12,39 @@ logging.basicConfig(level=logging.INFO)
 app.config['DOWNLOAD_FOLDER'] = 'downloads'
 os.makedirs(app.config['DOWNLOAD_FOLDER'], exist_ok=True)
 
-# ... (その他のルート: /privacy, /terms, /contact)
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
 
 @app.route('/download', methods=['POST'])
 def download():
     data = request.get_json()
     url = data.get('url')
     choice = data.get('choice')
-    format = data.get('format')  # 追加: 音声形式
+    format = data.get('format')
 
     ydl_opts = {
-        'format': format if choice == 'audio' else 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',  # format を動的に設定
+        'format': format if choice == 'audio' else 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
         'noplaylist': True,
         'quiet': True,
         'outtmpl': os.path.join(app.config['DOWNLOAD_FOLDER'], '%(title)s.%(ext)s')
     }
+
+    # TikTok動画の場合のフォーマット設定 (例)
+    if 'tiktok.com' in url:
+        ydl_opts['format'] = 'best'  # または確認した適切なフォーマットに変更
 
     try:
         with YoutubeDL(ydl_opts) as ydl:
@@ -47,7 +65,12 @@ def download():
             return jsonify({'download_url': f'/download_file/{file_name}'}), 200
     except DownloadError as e:
         logging.error(f"DownloadError: {str(e)}")
-        return jsonify({'error': f'Failed to generate download URL: {str(e)}'}), 500
+        if "Unsupported URL" in str(e):
+            return jsonify({'error': 'Unsupported URL. Please check the URL and try again.'}), 400
+        elif "Requested format is not available" in str(e):
+            return jsonify({'error': 'Requested format is not available for this video.'}), 400
+        else:
+            return jsonify({'error': f'Failed to generate download URL: {str(e)}'}), 500
     except Exception as e:
         logging.error(f"Unexpected error: {str(e)}")
         return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
@@ -55,7 +78,6 @@ def download():
 @app.route('/download_file/<filename>')
 def download_file(filename):
     file_path = os.path.join(app.config['DOWNLOAD_FOLDER'], filename)
-    # ファイルの拡張子からMIMEタイプを推測 (より正確な方法は別途調べる)
     mime_type = mimetypes.guess_type(file_path)[0] or 'application/octet-stream'
     return send_from_directory(app.config['DOWNLOAD_FOLDER'], filename, as_attachment=True, mimetype=mime_type)
 
