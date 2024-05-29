@@ -1,23 +1,32 @@
 document.getElementById('download-form').addEventListener('submit', function(event) {
     event.preventDefault();
     
-    var url = document.getElementById('url').value;
-    var choice = document.getElementById('choice').value;
-    var format = document.getElementById('selected-format').value;
+    var urlInput = document.getElementById('url');
+    var choiceSelect = document.getElementById('choice');
+    var selectedFormat = document.getElementById('selected-format').value; // 追加: 選択された音声形式
 
     // フォーム送信時に以前のメッセージとリンクをクリア
     document.getElementById('message').style.display = 'none';
     document.getElementById('download-link').style.display = 'none';
     document.getElementById('loading').style.display = 'block';
-    
+
     fetch('/download', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url: url, choice: choice, format: format }),
+        body: JSON.stringify({
+            url: urlInput.value,
+            choice: choiceSelect.value,
+            format: selectedFormat // 追加: 選択された音声形式
+        })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         document.getElementById('loading').style.display = 'none';
         if (data.error) {
@@ -26,7 +35,9 @@ document.getElementById('download-form').addEventListener('submit', function(eve
         } else {
             const downloadUrl = data.download_url;
             const downloadLink = document.getElementById('download-url');
+            const filename = downloadUrl.split('/').pop(); // ファイル名を取得
             downloadLink.href = downloadUrl;
+            downloadLink.download = filename; // ダウンロード属性を設定
             document.getElementById('download-link').style.display = 'block';
         }
     })
