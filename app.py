@@ -48,10 +48,13 @@ def download():
         'noplaylist': True,
         'quiet': True,
         'outtmpl': os.path.join(app.config['DOWNLOAD_FOLDER'], '%(title)s.%(ext)s'),
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'cookiefile': 'path/to/cookies.txt',  # クッキー情報を使用
-        'proxy': 'http://your-proxy-server:port'  # 必要に応じてプロキシを設定
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
+
+    # クッキーファイルの設定（存在しない場合は設定しない）
+    cookies_file = 'path/to/cookies.txt'
+    if os.path.exists(cookies_file):
+        ydl_opts['cookiefile'] = cookies_file
 
     try:
         with YoutubeDL(ydl_opts) as ydl:
