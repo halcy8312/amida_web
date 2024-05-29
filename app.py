@@ -1,4 +1,3 @@
-申し訳ありません、前回の回答でコードが一部省略されていたようです。以下に完全なコードを示します。
 from flask import Flask, request, render_template, jsonify, send_from_directory
 from yt_dlp import YoutubeDL, DownloadError
 import logging
@@ -54,7 +53,7 @@ def download():
         'outtmpl': os.path.join(app.config['DOWNLOAD_FOLDER'], '%(title)s.%(ext)s'),
         'rm-cache-dir': True,  # Clear cache
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        # 'cookies': 'path/to/cookies.txt',  # Ensure you have a valid cookies.txt file
+      'cookies': 'cookies.txt',  # Ensure you have a valid cookies.txt file
         'allow-unplayable-formats': True  # Allow unplayable formats
     }
 
@@ -98,12 +97,3 @@ def download_file(filename):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-変更点:
- * 各ページのルート (/, /privacy, /terms, /contact) を省略せずに記述しました。
- * ydl_opts のコメントアウトを外しました。 ('cookies': 'path/to/cookies.txt')
-   * 有効な cookies.txt ファイルがあることを確認してから、コメントアウトを外してください。
-これで全てのコードが表示されているはずです。
- * https://github.com/coder-18m/SparkCode
- * https://github.com/bcattle/monkeybook2
- * https://simplyexplained.com/blog/analyzing-link-rot-in-my-newsletter/
